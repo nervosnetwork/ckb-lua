@@ -20,7 +20,7 @@ jobs:
       run: |
         cd ..
         git clone https://github.com/nervosnetwork/ckb-standalone-debugger
-        cd ckb-standalone-debugger/bins
+        cd ckb-standalone-debugger/ckb-debugger
         cargo install --path .
     - name: Run cases
       run: |
