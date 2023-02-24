@@ -80,6 +80,9 @@ benchmark:
 test:
 	RUST_LOG=debug $(CKB-DEBUGGER) --max-cycles $(MAX-CYCLES) --read-file bn.lua --bin ../../build/lua-loader.debug -- -r
 
+hello_world:
+	$(call run, hello_world.lua)
+
 run-pretty:
 	$(call run_pretty_result, test_$(TEST).lua)
 

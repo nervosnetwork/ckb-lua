@@ -10,6 +10,13 @@ A project to help developers writing script in Lua on [CKB-VM](https://github.co
 make all-via-docker
 ```
 
+## Playground
+There are a lot of tests located in 'tests' folder. Before running, please install ckb-debugger described in [CI scripts](.github/workflows/ci.yml).
+Here is a "hello,world" example:
+
+```bash
+make -C tests/test_cases hello_world
+```
 
 ## Usages
 
