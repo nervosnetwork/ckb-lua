@@ -18,10 +18,11 @@ jobs:
         make all-via-docker
     - name: Install ckb-debugger
       run: |
-        cd ..
-        git clone https://github.com/nervosnetwork/ckb-standalone-debugger
-        cd ckb-standalone-debugger/ckb-debugger
-        cargo install --path .
+        wget 'https://github.com/nervosnetwork/ckb-standalone-debugger/releases/download/v0.107.0/ckb-debugger-linux-x64.tar.gz'
+        tar zxvf ckb-debugger-linux-x64.tar.gz
+        chmod +x ckb-debugger
+        cp ckb-debugger ~/.cargo/bin
+        ckb-debugger --version
     - name: Run cases
       run: |
         cd tests/official && make ci
