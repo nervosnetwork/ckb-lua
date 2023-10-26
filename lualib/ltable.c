@@ -23,7 +23,7 @@
 */
 
 #include <limits.h>
-#include <math.h>
+#include "my_math.h"
 
 #include "ldebug.h"
 #include "ldo.h"

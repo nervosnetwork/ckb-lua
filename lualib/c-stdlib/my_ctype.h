@@ -4,11 +4,20 @@
 extern "C" {
 #endif
 
-int   islower(int);
-int   isupper(int);
+int islower(int);
+int isupper(int);
 
-int   tolower(int);
-int   toupper(int);
+int tolower(int);
+int toupper(int);
+
+int isalnum(int ch);
+int isdigit(int ch);
+int isxdigit(int ch);
+int isspace(int ch);
+int isalpha(int ch);
+int iscntrl(int ch);
+int isgraph(int ch);
+int ispunct(int ch);
 
 #ifdef __cplusplus
 }

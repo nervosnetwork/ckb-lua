@@ -82,6 +82,14 @@ double scalbn(double, int);
 
 double ldexp(double, int);
 
+double floor(double x);
+
+double ceil(double x);
+
+double frexp(double arg, int* exp);
+
+double fmod(double numer, double denom);
+
 #ifdef __cplusplus
 }
 #endif

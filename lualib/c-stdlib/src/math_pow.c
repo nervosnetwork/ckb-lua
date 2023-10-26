@@ -57,22 +57,9 @@
  * to produce the hexadecimal values shown.
  */
 
-#include <stdio.h>
+#include "my_stdio.h"
 
-#include <float.h>
-
-#include "math_private.h"
-
-typedef union {
-    double value;
-    struct {
-        uint32_t lsw;
-        uint32_t msw;
-    } parts;
-    struct {
-        uint64_t w;
-    } xparts;
-} ieee_double_shape_type;
+#include "my_float.h"
 
 double copysign(double x, double y) {
     uint32_t hx, hy;

@@ -9,6 +9,7 @@
 
 #include <stdarg.h>
 
+#include "my_stddef.h"
 #include "llimits.h"
 #include "lua.h"
 
@@ -473,13 +474,13 @@ typedef struct Udata0 {
     } bindata;
 } Udata0;
 
+/* get the address of the memory block inside 'Udata' */
+#define getudatamem(u) (cast_charp(u) + udatamemoffset((u)->nuvalue))
+
 /* compute the offset of the memory area of a userdata */
 #define udatamemoffset(nuv)                 \
     ((nuv) == 0 ? offsetof(Udata0, bindata) \
                 : offsetof(Udata, uv) + (sizeof(UValue) * (nuv)))
-
-/* get the address of the memory block inside 'Udata' */
-#define getudatamem(u) (cast_charp(u) + udatamemoffset((u)->nuvalue))
 
 /* compute the size of a userdata */
 #define sizeudata(nuv, nb) (udatamemoffset(nuv) + (nb))

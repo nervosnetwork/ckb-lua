@@ -9,11 +9,11 @@
 
 #include "lvm.h"
 
-#include <float.h>
+#include "my_float.h"
 #include <limits.h>
-#include <math.h>
+#include "my_math.h"
 #include <stdlib.h>
-#include <string.h>
+#include "my_string.h"
 #include "my_stdio.h"
 
 #include "ldebug.h"

@@ -8,9 +8,9 @@
 // https://github.com/mpaland/printf/tree/d3b984684bb8a8bdc48cc7a1abecb93ce59bbe3e
 
 #include <stdarg.h>
-#include <stddef.h>
+#include "my_stddef.h"
 #include <stdbool.h>
-#include <stdint.h>
+#include "my_stdint.h"
 
 /**
  * Output a character to a custom device like UART, used by the printf()
@@ -190,7 +190,7 @@ int fctprintf(void (*out)(char character, void *arg), void *arg,
 
 // import float.h for DBL_MAX
 #if defined(PRINTF_SUPPORT_FLOAT)
-#include <float.h>
+#include "my_float.h"
 #endif
 
 // output function type
@@ -778,8 +778,7 @@ static int _vsnprintf(out_fct_type out, char *buffer, const size_t maxlen,
       break;
 #endif
     case 'j':
-      flags |=
-          (sizeof(intmax_t) == sizeof(long) ? FLAGS_LONG : FLAGS_LONG_LONG);
+      flags |= FLAGS_LONG;
       format++;
       break;
     case 'z':

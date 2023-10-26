@@ -7,10 +7,8 @@
 #define lmathlib_c
 #define LUA_LIB
 
-#include <float.h>
+#include "my_float.h"
 #include <limits.h>
-
-#include <math.h>
 
 #include "my_math.h"
 

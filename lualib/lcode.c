@@ -9,9 +9,10 @@
 
 #include "lcode.h"
 
-#include <float.h>
+#include "my_float.h"
+#include "my_stdint.h"
 #include <limits.h>
-#include <math.h>
+#include "my_math.h"
 #include <stdlib.h>
 
 #include "ldebug.h"

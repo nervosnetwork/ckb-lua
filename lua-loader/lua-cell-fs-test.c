@@ -2,7 +2,7 @@
 
 int dochunk(lua_State *L, int status);
 
-int exit(int c);
+void exit(int c);
 
 FSFile *ckb_must_get_file(char *filename) {
     FSFile *file = 0;

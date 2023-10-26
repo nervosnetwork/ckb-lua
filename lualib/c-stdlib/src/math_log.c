@@ -64,9 +64,7 @@
  * to produce the hexadecimal values shown.
  */
 
-#include <float.h>
-
-#include "math_private.h"
+#include "my_float.h"
 
 double log(double x) {
     double hfsq, f, s, z, R, w, t1, t2, dk;

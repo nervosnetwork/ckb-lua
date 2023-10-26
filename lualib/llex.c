@@ -9,8 +9,8 @@
 
 #include "llex.h"
 
-#include <locale.h>
-#include <string.h>
+#include "my_locale.h"
+#include "my_string.h"
 
 #include "lctype.h"
 #include "ldebug.h"

@@ -27,9 +27,8 @@
 
 extern void malloc_config(uintptr_t min, uintptr_t max);
 
-int exit(int c) {
+void exit(int c) {
     ckb_exit(c);
-    return 0;
 }
 void enable_local_access(int b);
 void enable_fs_access(int b);

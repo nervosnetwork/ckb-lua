@@ -7,10 +7,10 @@
 #define lbaselib_c
 #define LUA_LIB
 
-#include <ctype.h>
+#include "my_ctype.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include "my_string.h"
 
 #include "lauxlib.h"
 #include "lprefix.h"

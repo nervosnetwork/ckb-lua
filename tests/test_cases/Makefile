@@ -69,6 +69,8 @@ all:
 	$(call run_with_mocked_tx, test_ckbsyscalls.lua)
 	$(call run, bn.lua)
 
+ci-no-dylib: hello_world save-and-load-file-system-data partial_loading memory_leak lua-fs-util
+
 ci: hello_world save-and-load-file-system-data partial_loading memory_leak dylibtest lua-fs-util
 	$(call run_ci, test_require.lua)
 	$(call run_ci, test_loadfile.lua)

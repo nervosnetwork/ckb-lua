@@ -7,10 +7,9 @@
 #define lutf8lib_c
 #define LUA_LIB
 
-#include <assert.h>
 #include <limits.h>
 #include <stdlib.h>
-#include <string.h>
+#include "my_string.h"
 
 #include "lauxlib.h"
 #include "lprefix.h"

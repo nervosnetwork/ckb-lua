@@ -11,7 +11,7 @@
 
 #include <stdarg.h>
 #include <stddef.h>
-#include <string.h>
+#include "my_string.h"
 
 #include "lapi.h"
 #include "lcode.h"

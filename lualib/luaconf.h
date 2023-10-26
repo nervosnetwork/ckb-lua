@@ -10,6 +10,8 @@
 #include <limits.h>
 #include <stddef.h>
 #include "my_stddef.h"
+#include "my_stdlib.h"
+#include "my_float.h"
 
 /*
 ** ===================================================================

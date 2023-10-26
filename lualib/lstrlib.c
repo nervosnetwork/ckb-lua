@@ -7,14 +7,14 @@
 #define lstrlib_c
 #define LUA_LIB
 
-#include <ctype.h>
-#include <float.h>
+#include "my_ctype.h"
+#include "my_float.h"
 #include <limits.h>
-#include <locale.h>
-#include <math.h>
+#include "my_locale.h"
+#include "my_math.h"
 #include <stddef.h>
 #include <stdlib.h>
-#include <string.h>
+#include "my_string.h"
 #include "my_stdio.h"
 
 #include "lauxlib.h"

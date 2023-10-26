@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-#include <features.h>
+#include "my_features.h"
 
 typedef unsigned long __jmp_buf[26];
 

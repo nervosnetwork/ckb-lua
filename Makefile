@@ -63,7 +63,7 @@ clean-local:
 	rm -f build/libckblua*
 	rm -f build/dylibtest
 	rm -f build/dylibexample
-	rm -f build/spawnexample
+	rm -f build/spawnexample*
 
 clean: clean-local
 	make -C lualib clean

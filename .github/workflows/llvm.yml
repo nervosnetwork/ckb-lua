@@ -1,0 +1,37 @@
+name: CI for LLVM
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        llvm_version: [16]
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+    - uses: leafo/gh-actions-lua@v9
+      with:
+        luaVersion: "5.4"
+    - name: Install ckb-debugger
+      run: |
+        wget 'https://github.com/nervosnetwork/ckb-standalone-debugger/releases/download/v0.107.0/ckb-debugger-linux-x64.tar.gz'
+        tar zxvf ckb-debugger-linux-x64.tar.gz
+        chmod +x ckb-debugger
+        cp ckb-debugger ~/.cargo/bin
+        ckb-debugger --version
+    - name: Install LLVM
+      run: |
+        curl -sf -L https://apt.llvm.org/llvm.sh | sudo bash -s -- ${{ matrix.llvm_version }}
+    - name: Build
+      run: |
+        make -f Makefile.clang V=1 LLVM_VERSION=${{ matrix.llvm_version }}
+    - name: Run cases
+      run: |
+        cd tests/official && make ci
+        cd ../test_cases && make ci-no-dylib
+        cd ../ckb-c-stdlib-tests && make all-via-docker && make ci

@@ -22,9 +22,9 @@ typedef struct FILE {
     uint32_t offset;
 } FILE;
 
-FILE *stdin;
-FILE *stdout;
-FILE *stderr;
+extern FILE *stdin;
+extern FILE *stdout;
+extern FILE *stderr;
 
 int remove(const char *__filename);
 

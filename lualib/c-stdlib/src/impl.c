@@ -1,12 +1,12 @@
 #include <limits.h>
-#include <locale.h>
-#include <math.h>
-#include <setjmp.h>
-#include <stdint.h>
+#include "my_locale.h"
+#include "my_math.h"
+#include "my_setjmp.h"
+#include "my_stdint.h"
 #include <stdarg.h>
 #include <stdbool.h>
-#include <stddef.h>
-#include <string.h>
+#include "my_stddef.h"
+#include "my_string.h"
 
 #include "printf_impl.h"
 #include "malloc_impl.h"
@@ -926,4 +926,40 @@ done:
     *endptr = (char *)p;
 
   return value * sign;
+}
+
+int iscntrl(int c)
+{
+	return (unsigned)c < 0x20 || c == 0x7f;
+}
+
+int isgraph(int c)
+{
+	return (unsigned)c-0x21 < 0x5e;
+}
+
+
+int isalpha(int c)
+{
+	return ((unsigned)c|32)-'a' < 26;
+}
+
+int isdigit(int c)
+{
+	return (unsigned)c-'0' < 10;
+}
+
+int isxdigit(int c)
+{
+	return isdigit(c) || ((unsigned)c|32)-'a' < 6;
+}
+
+int isalnum(int c)
+{
+	return isalpha(c) || isdigit(c);
+}
+
+int ispunct(int c)
+{
+	return isgraph(c) && !isalnum(c);
 }

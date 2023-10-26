@@ -9,9 +9,10 @@
 
 #include "ldo.h"
 
-#include <setjmp.h>
+#include "my_setjmp.h"
 #include <stdlib.h>
-#include <string.h>
+#include "my_string.h"
+#include "my_stdlib.h"
 
 #include "lapi.h"
 #include "ldebug.h"

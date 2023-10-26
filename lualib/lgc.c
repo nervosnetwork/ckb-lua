@@ -9,7 +9,7 @@
 
 #include "lgc.h"
 
-#include <string.h>
+#include "my_string.h"
 #include "my_stdio.h"
 
 #include "ldebug.h"
