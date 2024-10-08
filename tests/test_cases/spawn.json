@@ -12,8 +12,8 @@
         "output": {
           "capacity": "0x10000000",
           "lock": {
-            "code_hash": "{{ hash ../../build/spawnexample }}",
-            "hash_type": "data1",
+            "code_hash": "0x{{ hash ../../build/spawnexample }}",
+            "hash_type": "data2",
             "args": "0x"
           },
           "type": null
@@ -35,12 +35,12 @@
           "capacity": "0x10000000",
           "lock": {
             "code_hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
-            "hash_type": "data1",
+            "hash_type": "data2",
             "args": "0x"
           },
           "type": null
         },
-        "data": "{{ data ../../build/spawnexample }}",
+        "data": "0x{{ data ../../build/spawnexample }}",
         "header": null
       },
       {
@@ -55,12 +55,12 @@
           "capacity": "0x10000000",
           "lock": {
             "code_hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
-            "hash_type": "data1",
+            "hash_type": "data2",
             "args": "0x"
           },
           "type": null
         },
-        "data": "{{ data ../../build/lua-loader }}",
+        "data": "0x{{ data ../../build/lua-loader }}",
         "header": null
       }
     ],
@@ -99,12 +99,12 @@
         "capacity": "0x0",
         "lock": {
           "code_hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
-          "hash_type": "data1",
+          "hash_type": "data2",
           "args": "0x"
         },
         "type": {
           "code_hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
-          "hash_type": "data1",
+          "hash_type": "data2",
           "args": "0x"
         }
       }
