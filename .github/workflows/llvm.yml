@@ -6,7 +6,7 @@ jobs:
   build:
     strategy:
       matrix:
-        llvm_version: [16]
+        llvm_version: [18]
 
     runs-on: ubuntu-latest
 
