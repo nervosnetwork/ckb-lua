@@ -858,17 +858,81 @@ int lua_ckb_load_header_by_field(lua_State *L) {
 
 // int ckb_spawn(size_t index, size_t source, size_t place, size_t bounds,
 //               spawn_args_t* spawn_args);
+int lua_ckb_spawn(lua_State *L) {
+    // FIELD fields[] = {
+    //     {"index", UINT64},
+    //     {"source", UINT64},
+    //     {"place", UINT64},
+    //     {"bounds", UINT64},
+    //     {"argv",}
+    // };
+    return 0;
+}
 
 // int ckb_spawn_cell(const uint8_t* code_hash, uint8_t hash_type, uint32_t offset,
 //                    uint32_t length, spawn_args_t* spawn_args);
 
-// int ckb_wait(uint64_t pid, int8_t* exit_code);
+int lua_ckb_wait(lua_State *L) {
+    FIELD fields[] = {
+        {"pid", UINT64},
+    };
+    GET_FIELDS_WITH_CHECK(L, fields, 1, 1);
+    int8_t exit = 0;
+    int err = ckb_wait(fields[0].arg.u64, &exit);
+    if (err != 0) {
+        lua_pushnil(L);
+        lua_pushinteger(L, err);
+        return 2;
+    }
+    lua_pushinteger(L, exit);
+    lua_pushnil(L);
+    return 2;
+};
 
-// uint64_t ckb_process_id();
+int lua_ckb_process_id(lua_State *L) {
+    uint64_t pid = ckb_process_id();
+    lua_pushinteger(L, pid);
+    return 1;
+}
 
-// int ckb_pipe(uint64_t fds[2]);
+int lua_ckb_pipe(lua_State *L) {
+    uint64_t fds[2];
+    int err = ckb_pipe(fds);
+    if (err != 0) {
+        lua_pushnil(L);
+        lua_pushinteger(L, err);
+        return 2;
+    }
+    lua_newtable(L);
+    lua_pushinteger(L, fds[0]);
+    lua_rawseti(L, -2, 1);
+    lua_pushinteger(L, fds[1]);
+    lua_rawseti(L, -2, 2);
+    lua_pushnil(L);
+    return 2;
+}
 
-// int ckb_read(uint64_t fd, void* buffer, size_t* length);
+int lua_ckb_read(lua_State *L) {
+    FIELD fields[] = {
+        {"fd", UINT64},
+        {"size", UINT64},
+    };
+    GET_FIELDS_WITH_CHECK(L, fields, 2, 2);
+    uint64_t fd = fields[0].arg.u64;
+    uint64_t size = fields[1].arg.u64;
+
+    uint8_t *buffer = (uint8_t *)malloc(size);
+    int ret = ckb_read(fd, buffer, &size);
+    if (ret != 0) {
+        lua_pushnil(L);
+        lua_pushinteger(L, ret);
+        return 2;
+    }
+    lua_pushlstring(L, (char *)buffer, size);
+    free(buffer);
+    lua_pushnil(L);
+    return 2;
+}
 
 int lua_ckb_write(lua_State *L) {
     FIELD fields[] = {
@@ -876,7 +940,7 @@ int lua_ckb_write(lua_State *L) {
         {"buffer", BUFFER},
     };
     GET_FIELDS_WITH_CHECK(L, fields, 2, 2);
-    uint64_t fd = fields[0].arg.integer;
+    uint64_t fd = fields[0].arg.u64;
     uint64_t length = fields[1].arg.buffer.length;
     int ret = ckb_write(fd, fields[1].arg.buffer.buffer, &length);
     if (ret != 0) {
@@ -914,10 +978,10 @@ int lua_ckb_close(lua_State *L) {
         {"fd", UINT64},
     };
     GET_FIELDS_WITH_CHECK(L, fields, 1, 1);
-    uint64_t fd = fields[0].arg.integer;
+    uint64_t fd = fields[0].arg.u64;
     err = ckb_close(fd);
     lua_pushinteger(L, err);
-    return 2;
+    return 1;
 }
 
 int lua_ckb_load_block_extension(lua_State *L) {
@@ -951,6 +1015,9 @@ static const luaL_Reg ckb_syscall[] = {
     {"load_input_by_field", lua_ckb_load_input_by_field},
     {"load_header_by_field", lua_ckb_load_header_by_field},
 
+    {"process_id", lua_ckb_process_id},
+    {"pipe", lua_ckb_pipe},
+    {"read", lua_ckb_read},
     {"write", lua_ckb_write},
     {"inherited_fds", lua_ckb_inherited_fds},
     {"close", lua_ckb_close},

@@ -18,7 +18,10 @@ int main() {
        local inherited_fds, err = ckb.inherited_fds(); \
        local n, err = ckb.write(inherited_fds[1], m); \
        ckb.close(inherited_fds[1]); \
-       assert(n == 10);",
+       assert(n == 10);\
+       local pid = ckb.process_id(); \
+       assert(pid == 1); \
+        ",
         "hello",
         "world",
     };
@@ -40,6 +43,14 @@ int main() {
     err = ckb_read(rw_pipe[0], buffer, &length);
     if (err != 0) {
         return err;
+    }
+    int8_t exit = 0;
+    err = ckb_wait(pid, &exit);
+    if (err != 0) {
+        return err;
+    }
+    if (exit != 0) {
+      return 1;
     }
     if (strcmp((char *)buffer, "helloworld") != 0) {
         return 1;
