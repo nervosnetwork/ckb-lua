@@ -828,25 +828,23 @@ int lua_ckb_spawn(lua_State *L) {
     uint64_t place = fields[2].arg.u64;
     uint64_t bounds = fields[3].arg.u64;
 
-    size_t argv_len = lua_rawlen(L, -5);
-    const char **argv = malloc(argv_len);
+    size_t argv_len = lua_rawlen(L, 5);
+    const char **argv = malloc(argv_len * sizeof(char*));
     for (int i = 0; i < argv_len; i++) {
-        lua_rawgeti(L, -5, i+1);
+        lua_rawgeti(L, 5, i+1);
         const char* s = lua_tostring(L, -1);
         argv[i] = s;
         lua_pop(L, 1);
     }
-    size_t ifds_len = lua_rawlen(L, -6);
-    uint64_t *ifds = malloc(ifds_len + 1);
+    size_t ifds_len = lua_rawlen(L, 6);
+    uint64_t *ifds = malloc((ifds_len + 1) * sizeof(uint64_t));
     ifds[ifds_len] = 0;
     for (int i = 0; i < ifds_len; i++) {
-        lua_rawgeti(L, -6, i+1);
+        lua_rawgeti(L, 6, i+1);
         uint64_t n = lua_tointeger(L, -1);
         ifds[i] = n;
         lua_pop(L, 1);
     }
-    free(argv);
-    free(ifds);
     uint64_t pid = 0;
     spawn_args_t spgs = {
         .argc = argv_len,
@@ -855,6 +853,8 @@ int lua_ckb_spawn(lua_State *L) {
         .inherited_fds = ifds,
     };
     int err = ckb_spawn(index, source, place, bounds, &spgs);
+    free(argv);
+    free(ifds);
     if (err != 0) {
         lua_pushnil(L);
         lua_pushinteger(L, err);
@@ -1011,6 +1011,8 @@ static const luaL_Reg ckb_syscall[] = {
     {"load_input_by_field", lua_ckb_load_input_by_field},
     {"load_header_by_field", lua_ckb_load_header_by_field},
 
+    {"spawn", lua_ckb_spawn},
+    {"wait", lua_ckb_wait},
     {"process_id", lua_ckb_process_id},
     {"pipe", lua_ckb_pipe},
     {"read", lua_ckb_read},
