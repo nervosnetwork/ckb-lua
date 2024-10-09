@@ -865,8 +865,56 @@ int lua_ckb_spawn(lua_State *L) {
     return 2;
 }
 
-// int ckb_spawn_cell(const uint8_t* code_hash, uint8_t hash_type, uint32_t offset,
-//                    uint32_t length, spawn_args_t* spawn_args);
+int lua_ckb_spawn_cell(lua_State *L) {
+    FIELD fields[] = {
+        {"code_hash", BUFFER},
+        {"hash_type", UINT64},
+        {"offset", UINT64},
+        {"length", UINT64},
+    };
+    GET_FIELDS_WITH_CHECK(L, fields, 4, 4);
+
+    uint8_t *code_hash = fields[0].arg.buffer.buffer;
+    uint8_t hash_type = fields[1].arg.u64;
+    uint64_t offset = fields[2].arg.u64;
+    uint64_t length = fields[3].arg.u64;
+
+    size_t argv_len = lua_rawlen(L, 5);
+    const char **argv = malloc(argv_len * sizeof(char*));
+    for (int i = 0; i < argv_len; i++) {
+        lua_rawgeti(L, 5, i+1);
+        const char* s = lua_tostring(L, -1);
+        argv[i] = s;
+        lua_pop(L, 1);
+    }
+    size_t ifds_len = lua_rawlen(L, 6);
+    uint64_t *ifds = malloc((ifds_len + 1) * sizeof(uint64_t));
+    ifds[ifds_len] = 0;
+    for (int i = 0; i < ifds_len; i++) {
+        lua_rawgeti(L, 6, i+1);
+        uint64_t n = lua_tointeger(L, -1);
+        ifds[i] = n;
+        lua_pop(L, 1);
+    }
+    uint64_t pid = 0;
+    spawn_args_t spgs = {
+        .argc = argv_len,
+        .argv = argv,
+        .process_id = &pid,
+        .inherited_fds = ifds,
+    };
+    int err = ckb_spawn_cell(code_hash, hash_type, offset, length, &spgs);
+    free(argv);
+    free(ifds);
+    if (err != 0) {
+        lua_pushnil(L);
+        lua_pushinteger(L, err);
+        return 2;
+    }
+    lua_pushinteger(L, pid);
+    lua_pushnil(L);
+    return 2;
+}
 
 int lua_ckb_wait(lua_State *L) {
     FIELD fields[] = {
@@ -1012,6 +1060,7 @@ static const luaL_Reg ckb_syscall[] = {
     {"load_header_by_field", lua_ckb_load_header_by_field},
 
     {"spawn", lua_ckb_spawn},
+    {"spawn_cell", lua_ckb_spawn_cell},
     {"wait", lua_ckb_wait},
     {"process_id", lua_ckb_process_id},
     {"pipe", lua_ckb_pipe},
