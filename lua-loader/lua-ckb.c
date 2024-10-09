@@ -3,6 +3,7 @@
 #include "lauxlib.h"
 #include "lua-ckb.h"
 #include "lualib.h"
+#include "luaconf.h"
 #include <stdlib.h>
 #include <stdarg.h>
 
@@ -813,60 +814,55 @@ int lua_ckb_load_header_by_field(lua_State *L) {
     return CKB_LOAD6(L, ckb_load_header_by_field);
 }
 
-// int lua_ckb_spawn(lua_State *L) {
-//     printf("spawn is currently not implementd in ckb-lua-vm\n");
-//     lua_pushinteger(L, LUA_ERROR_NOT_IMPLEMENTED);
-//     return 1;
-// }
-
-// int lua_ckb_spawn_cell(lua_State *L) {
-//     printf("spawn_cell is currently not implementd in lua\n");
-//     lua_pushinteger(L, LUA_ERROR_NOT_IMPLEMENTED);
-//     return 1;
-// }
-
-// int lua_ckb_set_content(lua_State *L) {
-//     FIELD fields[] = {
-//         {"buffer", BUFFER},
-//     };
-//     GET_FIELDS_WITH_CHECK(L, fields, 1, 1);
-//     uint64_t length = fields[0].arg.buffer.length;
-//     int ret = ckb_set_content(fields[0].arg.buffer.buffer, &length);
-//     if (ret != 0) {
-//         lua_pushinteger(L, ret);
-//         return 1;
-//     }
-//     if (length != fields[0].arg.buffer.length) {
-//         printf("Passed content too large\n");
-//         lua_pushinteger(L, LUA_ERROR_INVALID_STATE);
-//         return 1;
-//     }
-//     lua_pushnil(L);
-//     return 1;
-// }
-
-// int lua_ckb_get_memory_limit(lua_State *L) {
-//     int ret = ckb_get_memory_limit();
-//     if (ret != 0) {
-//         lua_pushinteger(L, ret);
-//         return 1;
-//     }
-//     lua_pushnil(L);
-//     return 1;
-// }
-
-
-// int ckb_spawn(size_t index, size_t source, size_t place, size_t bounds,
-//               spawn_args_t* spawn_args);
 int lua_ckb_spawn(lua_State *L) {
-    // FIELD fields[] = {
-    //     {"index", UINT64},
-    //     {"source", UINT64},
-    //     {"place", UINT64},
-    //     {"bounds", UINT64},
-    //     {"argv",}
-    // };
-    return 0;
+    FIELD fields[] = {
+        {"index", UINT64},
+        {"source", UINT64},
+        {"place", UINT64},
+        {"bounds", UINT64},
+    };
+    GET_FIELDS_WITH_CHECK(L, fields, 4, 4);
+
+    uint64_t index = fields[0].arg.u64;
+    uint64_t source = fields[1].arg.u64;
+    uint64_t place = fields[2].arg.u64;
+    uint64_t bounds = fields[3].arg.u64;
+
+    size_t argv_len = lua_rawlen(L, -5);
+    const char **argv = malloc(argv_len);
+    for (int i = 0; i < argv_len; i++) {
+        lua_rawgeti(L, -5, i+1);
+        const char* s = lua_tostring(L, -1);
+        argv[i] = s;
+        lua_pop(L, 1);
+    }
+    size_t ifds_len = lua_rawlen(L, -6);
+    uint64_t *ifds = malloc(ifds_len + 1);
+    ifds[ifds_len] = 0;
+    for (int i = 0; i < ifds_len; i++) {
+        lua_rawgeti(L, -6, i+1);
+        uint64_t n = lua_tointeger(L, -1);
+        ifds[i] = n;
+        lua_pop(L, 1);
+    }
+    free(argv);
+    free(ifds);
+    uint64_t pid = 0;
+    spawn_args_t spgs = {
+        .argc = argv_len,
+        .argv = argv,
+        .process_id = &pid,
+        .inherited_fds = ifds,
+    };
+    int err = ckb_spawn(index, source, place, bounds, &spgs);
+    if (err != 0) {
+        lua_pushnil(L);
+        lua_pushinteger(L, err);
+        return 2;
+    }
+    lua_pushinteger(L, pid);
+    lua_pushnil(L);
+    return 2;
 }
 
 // int ckb_spawn_cell(const uint8_t* code_hash, uint8_t hash_type, uint32_t offset,

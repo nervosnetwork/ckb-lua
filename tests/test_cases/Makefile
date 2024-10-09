@@ -6,7 +6,7 @@ TEST ?= tmp
 MAX-CYCLES ?= 99999999999
 
 define run
-	RUST_LOG=debug $(CKB-DEBUGGER) --max-cycles $(MAX-CYCLES) --read-file $(1)  --bin ../../build/lua-loader.debug -- -r   
+	RUST_LOG=debug $(CKB-DEBUGGER) --max-cycles $(MAX-CYCLES) --read-file $(1)  --bin ../../build/lua-loader.debug -- -r
 endef
 
 define run_ci
@@ -95,5 +95,3 @@ run-pretty:
 
 run-debugger:
 	$(CKB-DEBUGGER) --mode gdb --gdb-listen 127.0.0.1:${PORT} --read-file out_of_memory.lua --bin ../../build/lua-loader.debug -- -r
-
-
