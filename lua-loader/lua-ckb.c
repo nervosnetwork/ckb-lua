@@ -3,6 +3,7 @@
 #include "lauxlib.h"
 #include "lua-ckb.h"
 #include "lualib.h"
+#include "luaconf.h"
 #include <stdlib.h>
 #include <stdarg.h>
 
@@ -814,45 +815,221 @@ int lua_ckb_load_header_by_field(lua_State *L) {
 }
 
 int lua_ckb_spawn(lua_State *L) {
-    printf("spawn is currently not implementd in ckb-lua-vm\n");
-    lua_pushinteger(L, LUA_ERROR_NOT_IMPLEMENTED);
-    return 1;
+    FIELD fields[] = {
+        {"index", UINT64},
+        {"source", UINT64},
+        {"place", UINT64},
+        {"bounds", UINT64},
+    };
+    GET_FIELDS_WITH_CHECK(L, fields, 4, 4);
+
+    uint64_t index = fields[0].arg.u64;
+    uint64_t source = fields[1].arg.u64;
+    uint64_t place = fields[2].arg.u64;
+    uint64_t bounds = fields[3].arg.u64;
+
+    size_t argv_len = lua_rawlen(L, 5);
+    const char **argv = malloc(argv_len * sizeof(char*));
+    for (int i = 0; i < argv_len; i++) {
+        lua_rawgeti(L, 5, i+1);
+        const char* s = lua_tostring(L, -1);
+        argv[i] = s;
+        lua_pop(L, 1);
+    }
+    size_t ifds_len = lua_rawlen(L, 6);
+    uint64_t *ifds = malloc((ifds_len + 1) * sizeof(uint64_t));
+    ifds[ifds_len] = 0;
+    for (int i = 0; i < ifds_len; i++) {
+        lua_rawgeti(L, 6, i+1);
+        uint64_t n = lua_tointeger(L, -1);
+        ifds[i] = n;
+        lua_pop(L, 1);
+    }
+    uint64_t pid = 0;
+    spawn_args_t spgs = {
+        .argc = argv_len,
+        .argv = argv,
+        .process_id = &pid,
+        .inherited_fds = ifds,
+    };
+    int err = ckb_spawn(index, source, place, bounds, &spgs);
+    free(argv);
+    free(ifds);
+    if (err != 0) {
+        lua_pushnil(L);
+        lua_pushinteger(L, err);
+        return 2;
+    }
+    lua_pushinteger(L, pid);
+    lua_pushnil(L);
+    return 2;
 }
 
 int lua_ckb_spawn_cell(lua_State *L) {
-    printf("spawn_cell is currently not implementd in lua\n");
-    lua_pushinteger(L, LUA_ERROR_NOT_IMPLEMENTED);
-    return 1;
+    FIELD fields[] = {
+        {"code_hash", BUFFER},
+        {"hash_type", UINT64},
+        {"offset", UINT64},
+        {"length", UINT64},
+    };
+    GET_FIELDS_WITH_CHECK(L, fields, 4, 4);
+
+    uint8_t *code_hash = fields[0].arg.buffer.buffer;
+    uint8_t hash_type = fields[1].arg.u64;
+    uint64_t offset = fields[2].arg.u64;
+    uint64_t length = fields[3].arg.u64;
+
+    size_t argv_len = lua_rawlen(L, 5);
+    const char **argv = malloc(argv_len * sizeof(char*));
+    for (int i = 0; i < argv_len; i++) {
+        lua_rawgeti(L, 5, i+1);
+        const char* s = lua_tostring(L, -1);
+        argv[i] = s;
+        lua_pop(L, 1);
+    }
+    size_t ifds_len = lua_rawlen(L, 6);
+    uint64_t *ifds = malloc((ifds_len + 1) * sizeof(uint64_t));
+    ifds[ifds_len] = 0;
+    for (int i = 0; i < ifds_len; i++) {
+        lua_rawgeti(L, 6, i+1);
+        uint64_t n = lua_tointeger(L, -1);
+        ifds[i] = n;
+        lua_pop(L, 1);
+    }
+    uint64_t pid = 0;
+    spawn_args_t spgs = {
+        .argc = argv_len,
+        .argv = argv,
+        .process_id = &pid,
+        .inherited_fds = ifds,
+    };
+    int err = ckb_spawn_cell(code_hash, hash_type, offset, length, &spgs);
+    free(argv);
+    free(ifds);
+    if (err != 0) {
+        lua_pushnil(L);
+        lua_pushinteger(L, err);
+        return 2;
+    }
+    lua_pushinteger(L, pid);
+    lua_pushnil(L);
+    return 2;
 }
 
-int lua_ckb_set_content(lua_State *L) {
+int lua_ckb_wait(lua_State *L) {
     FIELD fields[] = {
-        {"buffer", BUFFER},
+        {"pid", UINT64},
     };
     GET_FIELDS_WITH_CHECK(L, fields, 1, 1);
-    uint64_t length = fields[0].arg.buffer.length;
-    int ret = ckb_set_content(fields[0].arg.buffer.buffer, &length);
-    if (ret != 0) {
-        lua_pushinteger(L, ret);
-        return 1;
+    int8_t exit = 0;
+    int err = ckb_wait(fields[0].arg.u64, &exit);
+    if (err != 0) {
+        lua_pushnil(L);
+        lua_pushinteger(L, err);
+        return 2;
     }
-    if (length != fields[0].arg.buffer.length) {
-        printf("Passed content too large\n");
-        lua_pushinteger(L, LUA_ERROR_INVALID_STATE);
-        return 1;
-    }
+    lua_pushinteger(L, exit);
     lua_pushnil(L);
+    return 2;
+};
+
+int lua_ckb_process_id(lua_State *L) {
+    uint64_t pid = ckb_process_id();
+    lua_pushinteger(L, pid);
     return 1;
 }
 
-int lua_ckb_get_memory_limit(lua_State *L) {
-    int ret = ckb_get_memory_limit();
+int lua_ckb_pipe(lua_State *L) {
+    uint64_t fds[2];
+    int err = ckb_pipe(fds);
+    if (err != 0) {
+        lua_pushnil(L);
+        lua_pushinteger(L, err);
+        return 2;
+    }
+    lua_newtable(L);
+    lua_pushinteger(L, fds[0]);
+    lua_rawseti(L, -2, 1);
+    lua_pushinteger(L, fds[1]);
+    lua_rawseti(L, -2, 2);
+    lua_pushnil(L);
+    return 2;
+}
+
+int lua_ckb_read(lua_State *L) {
+    FIELD fields[] = {
+        {"fd", UINT64},
+        {"size", UINT64},
+    };
+    GET_FIELDS_WITH_CHECK(L, fields, 2, 2);
+    uint64_t fd = fields[0].arg.u64;
+    uint64_t size = fields[1].arg.u64;
+
+    uint8_t *buffer = (uint8_t *)malloc(size);
+    int ret = ckb_read(fd, buffer, &size);
     if (ret != 0) {
+        lua_pushnil(L);
         lua_pushinteger(L, ret);
-        return 1;
+        return 2;
+    }
+    lua_pushlstring(L, (char *)buffer, size);
+    free(buffer);
+    lua_pushnil(L);
+    return 2;
+}
+
+int lua_ckb_write(lua_State *L) {
+    FIELD fields[] = {
+        {"fd", UINT64},
+        {"buffer", BUFFER},
+    };
+    GET_FIELDS_WITH_CHECK(L, fields, 2, 2);
+    uint64_t fd = fields[0].arg.u64;
+    uint64_t length = fields[1].arg.buffer.length;
+    int ret = ckb_write(fd, fields[1].arg.buffer.buffer, &length);
+    if (ret != 0) {
+        lua_pushnil(L);
+        lua_pushinteger(L, ret);
+        return 2;
+    }
+    lua_pushinteger(L, length);
+    lua_pushnil(L);
+    return 2;
+}
+
+int lua_ckb_inherited_fds(lua_State *L) {
+    int err = 0;
+    uint64_t fds[64];
+    uint64_t length = 64;
+    err = ckb_inherited_fds(fds, &length);
+    if (err != 0) {
+        lua_pushnil(L);
+        lua_pushinteger(L, err);
+        return 2;
+    }
+    lua_newtable(L);
+    for (int i = 0; i < length; i++) {
+        lua_pushinteger(L, fds[i]);
+        lua_rawseti(L, -2, i+1);
     }
     lua_pushnil(L);
+    return 2;
+}
+
+int lua_ckb_close(lua_State *L) {
+    int err = 0;
+    FIELD fields[] = {
+        {"fd", UINT64},
+    };
+    GET_FIELDS_WITH_CHECK(L, fields, 1, 1);
+    uint64_t fd = fields[0].arg.u64;
+    err = ckb_close(fd);
+    lua_pushinteger(L, err);
     return 1;
+}
+
+int lua_ckb_load_block_extension(lua_State *L) {
+    return CKB_LOAD5(L, ckb_load_block_extension);
 }
 
 static const luaL_Reg ckb_syscall[] = {
@@ -882,11 +1059,17 @@ static const luaL_Reg ckb_syscall[] = {
     {"load_input_by_field", lua_ckb_load_input_by_field},
     {"load_header_by_field", lua_ckb_load_header_by_field},
 
-    // Requires spawn syscall, which will be available in next hardfork
     {"spawn", lua_ckb_spawn},
     {"spawn_cell", lua_ckb_spawn_cell},
-    {"set_content", lua_ckb_set_content},
-    {"get_memory_limit", lua_ckb_get_memory_limit},
+    {"wait", lua_ckb_wait},
+    {"process_id", lua_ckb_process_id},
+    {"pipe", lua_ckb_pipe},
+    {"read", lua_ckb_read},
+    {"write", lua_ckb_write},
+    {"inherited_fds", lua_ckb_inherited_fds},
+    {"close", lua_ckb_close},
+    {"load_block_extension", lua_ckb_load_block_extension},
+
     {NULL, NULL}};
 
 LUAMOD_API int luaopen_ckb(lua_State *L) {

@@ -1,7 +1,7 @@
 CURRENT_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
 ifeq ($(origin LLVM_VERSION),undefined)
-	LLVM_VERSION = 16
+	LLVM_VERSION = 18
 endif
 
 LLVM_SUFFIX = $(if $(LLVM_VERSION),-$(LLVM_VERSION),)
@@ -17,7 +17,7 @@ CFLAGS += -fno-builtin-printf -fno-builtin-memcmp \
 		-nostdinc -nostdlib\
 		-fdata-sections -ffunction-sections
 
-CFLAGS += -I lualib -I lualib/c-stdlib -I include/ckb-c-stdlib -I include/ckb-c-stdlib/libc -I include/ckb-c-stdlib/molecule 
+CFLAGS += -I lualib -I lualib/c-stdlib -I include/ckb-c-stdlib -I include/ckb-c-stdlib/libc -I include/ckb-c-stdlib/molecule
 CFLAGS += -I deps/compiler-rt-builtins-riscv/compiler-rt/lib/builtins
 CFLAGS += -Wall -Werror -Wno-error=unused-command-line-argument -Wno-error=incompatible-library-redeclaration -Wno-error=invalid-noreturn -Wno-error=unused-function
 

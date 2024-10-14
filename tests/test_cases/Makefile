@@ -6,7 +6,7 @@ TEST ?= tmp
 MAX-CYCLES ?= 99999999999
 
 define run
-	RUST_LOG=debug $(CKB-DEBUGGER) --max-cycles $(MAX-CYCLES) --read-file $(1)  --bin ../../build/lua-loader.debug -- -r   
+	RUST_LOG=debug $(CKB-DEBUGGER) --max-cycles $(MAX-CYCLES) --read-file $(1)  --bin ../../build/lua-loader.debug -- -r
 endef
 
 define run_ci
@@ -59,6 +59,9 @@ dylibtest:
 spawnexample:
 	RUST_LOG=debug $(CKB-DEBUGGER) --max-cycles $(MAX-CYCLES) --tx-file spawn.json --cell-index 0 --cell-type input --script-group-type lock
 
+spawn_lua:
+	RUST_LOG=debug $(CKB-DEBUGGER) --max-cycles $(MAX-CYCLES) --tx-file spawn_lua.json --cell-index 0 --cell-type input --script-group-type lock
+
 lua-fs-util:
 	./lua-fs-pack-and-unpack.sh
 	./lua-fs-unpack-existing.sh
@@ -69,9 +72,9 @@ all:
 	$(call run_with_mocked_tx, test_ckbsyscalls.lua)
 	$(call run, bn.lua)
 
-ci-no-dylib: hello_world save-and-load-file-system-data partial_loading memory_leak lua-fs-util
+ci-no-dylib: hello_world save-and-load-file-system-data partial_loading memory_leak lua-fs-util spawnexample spawn_lua
 
-ci: hello_world save-and-load-file-system-data partial_loading memory_leak dylibtest lua-fs-util
+ci: hello_world save-and-load-file-system-data partial_loading memory_leak dylibtest lua-fs-util spawnexample spawn_lua
 	$(call run_ci, test_require.lua)
 	$(call run_ci, test_loadfile.lua)
 	$(call run_with_mocked_tx, test_ckbsyscalls.lua)
@@ -95,5 +98,3 @@ run-pretty:
 
 run-debugger:
 	$(CKB-DEBUGGER) --mode gdb --gdb-listen 127.0.0.1:${PORT} --read-file out_of_memory.lua --bin ../../build/lua-loader.debug -- -r
-
-

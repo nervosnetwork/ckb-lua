@@ -12,7 +12,7 @@ if err == nil then
 end
 ```
 
-Of course, this example is not enough for real world usage, but this article should be enough to show how to use ckb-lua-vm shared library from the main contract program. You can unleash the potential of Lua with your creativity afterward. For the curious, see here for [an implementation of sudt in lua](https://github.com/nervosnetwork/ckb-lua-vm/blob/4e5375eb2a866595f89826db5510bc9d1f8e9510/contracts/sudt.lua). Also note that, the sample code is written in c. As an alternative, you can write test code in rust. Both [loading shared library](https://docs.rs/ckb-std/latest/ckb_std/dynamic_loading/index.html) and mocking transaction to do unit tests are easy in rust. 
+Of course, this example is not enough for real world usage, but this article should be enough to show how to use ckb-lua-vm shared library from the main contract program. You can unleash the potential of Lua with your creativity afterward. For the curious, see here for [an implementation of sudt in lua](https://github.com/nervosnetwork/ckb-lua-vm/blob/4e5375eb2a866595f89826db5510bc9d1f8e9510/contracts/sudt.lua). Also note that, the sample code is written in c. As an alternative, you can write test code in rust. Both [loading shared library](https://docs.rs/ckb-std/latest/ckb_std/dynamic_loading/index.html) and mocking transaction to do unit tests are easy in rust.
 
 I will now explain what this sample code does and how to run it.
 
@@ -388,6 +388,110 @@ partial loading supported: yes
 return values: buf (the buffer that contains the header field), err (may be nil object to represent possible error)
 
 see also: [`ckb_load_header_by_field` syscall](https://github.com/nervosnetwork/rfcs/blob/master/rfcs/0009-vm-syscalls/0009-vm-syscalls.md#load-header-by-field)
+
+#### `ckb.spawn`
+description: spawn
+
+calling example: [`ckb.spawn(index, source, place, bounds, argv, fds)`](../examples/spawn.lua)
+
+arguments: index (the index of the cell), source (the source of the cell), place (the place, 0: cell_dep, 1: witness), bounds (offset + length), argv (table of arguments), fds (file descriptors).
+
+return values: pid (process id), err (may be nil object to represent possible error)
+
+see also: [`spawn` syscall](https://github.com/nervosnetwork/rfcs/blob/d14c1598e1f932e9d56537c244bff0ebca0b533a/rfcs/0050-vm-syscalls-3/0050-vm-syscalls-3.md#spawn)
+
+#### `ckb.spawn_cell`
+description: spawn cell from cell_dep.
+
+calling example: [`ckb.spawn(code_hash, hash_type, offset, length, argv, fds)`](../examples/spawn.lua)
+
+arguments: code_hash, hash_type, offset, length, argv (table of arguments), fds (file descriptors).
+
+return values: pid (process id), err (may be nil object to represent possible error)
+
+see also: [`spawn` syscall](https://github.com/nervosnetwork/rfcs/blob/d14c1598e1f932e9d56537c244bff0ebca0b533a/rfcs/0050-vm-syscalls-3/0050-vm-syscalls-3.md#spawn)
+
+#### `ckb.wait`
+description: wait
+
+calling example: [`ckb.wait(pid)`](../examples/spawn.lua)
+
+arguments: pid
+
+return values: exit code, err (may be nil object to represent possible error)
+
+see also: [`wait` syscall](https://github.com/nervosnetwork/rfcs/blob/d14c1598e1f932e9d56537c244bff0ebca0b533a/rfcs/0050-vm-syscalls-3/0050-vm-syscalls-3.md#wait)
+
+#### `ckb.process_id`
+description: process id
+
+calling example: [`ckb.process_id()`](../examples/spawn.lua)
+
+arguments: None
+
+return values: process id
+
+see also: [`process_id` syscall](https://github.com/nervosnetwork/rfcs/blob/d14c1598e1f932e9d56537c244bff0ebca0b533a/rfcs/0050-vm-syscalls-3/0050-vm-syscalls-3.md#process-id)
+
+#### `ckb.pipe`
+description: pipe
+
+calling example: [`ckb.pipe()`](../examples/spawn.lua)
+
+arguments: None
+
+return values: fds, err (may be nil object to represent possible error)
+
+see also: [`pipe` syscall](https://github.com/nervosnetwork/rfcs/blob/d14c1598e1f932e9d56537c244bff0ebca0b533a/rfcs/0050-vm-syscalls-3/0050-vm-syscalls-3.md#pipe)
+
+#### `ckb.read`
+description: read
+
+calling example: [`ckb.read(fd, size)`](../examples/spawn.lua)
+
+arguments: fd, read_size
+
+return values: buf, err (may be nil object to represent possible error)
+
+see also: [`read` syscall](https://github.com/nervosnetwork/rfcs/blob/d14c1598e1f932e9d56537c244bff0ebca0b533a/rfcs/0050-vm-syscalls-3/0050-vm-syscalls-3.md#read)
+
+#### `ckb.write`
+description: write
+
+calling example: [`ckb.write(fd, buf)`](../examples/spawn.lua)
+
+arguments: fd, buf
+
+return values: write_size, err (may be nil object to represent possible error)
+
+see also: [`write` syscall](https://github.com/nervosnetwork/rfcs/blob/d14c1598e1f932e9d56537c244bff0ebca0b533a/rfcs/0050-vm-syscalls-3/0050-vm-syscalls-3.md#write)
+
+#### `ckb.inherited_fds`
+description: inherited_fds
+
+calling example: [`ckb.inherited_fds()`](../examples/spawn.lua)
+
+arguments: None
+
+return values: fds, err (may be nil object to represent possible error)
+
+see also: [`inherited_fds` syscall](https://github.com/nervosnetwork/rfcs/blob/d14c1598e1f932e9d56537c244bff0ebca0b533a/rfcs/0050-vm-syscalls-3/0050-vm-syscalls-3.md#inherited-file-descriptors)
+
+#### `ckb.close`
+description: close
+
+calling example: [`ckb.close(fd)`](../examples/spawn.lua)
+
+arguments: fd
+
+return values: err (may be nil object to represent possible error)
+
+see also: [`close` syscall](https://github.com/nervosnetwork/rfcs/blob/d14c1598e1f932e9d56537c244bff0ebca0b533a/rfcs/0050-vm-syscalls-3/0050-vm-syscalls-3.md#close)
+
+#### `ckb.load_block_extension`
+description: load block extension
+
+see also: [`load_block_extension` syscall](https://github.com/nervosnetwork/rfcs/blob/d14c1598e1f932e9d56537c244bff0ebca0b533a/rfcs/0050-vm-syscalls-3/0050-vm-syscalls-3.md#load-block-extension)
 
 #### `ckb.unpack_script`
 description: unpack the buffer that contains the molecule structure `Script`
