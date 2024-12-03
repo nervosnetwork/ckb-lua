@@ -38,7 +38,7 @@ deps/musl/release/:
 	cd deps/musl/ && CLANG=$(CC) ./ckb/build.sh
 
 deps/ckb-libcxx-builder/release/:
-	cd deps/ckb-libcxx-builder && CLANG=$(CC) ./build.sh
+	cd deps/ckb-libcxx-builder && mkdir -p release && LLVM_VERSION= CLANG=$(CC) ./build.sh
 
 deps/compiler-rt-builtins-riscv/build/libcompiler-rt.a: deps/musl/release/ deps/ckb-libcxx-builder/release/
 	cd deps/compiler-rt-builtins-riscv && \
