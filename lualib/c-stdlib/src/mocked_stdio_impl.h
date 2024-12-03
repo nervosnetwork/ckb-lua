@@ -145,20 +145,6 @@ int setvbuf(FILE *__stream, char *__buf, int __modes, size_t __n) {
     return 0;
 }
 
-int fprintf(FILE *__stream, const char *__format, ...) {
-    NOT_IMPL(fprintf);
-    return 0;
-}
-
-int vfprintf(FILE *__s, const char *__format, ...) {
-    NOT_IMPL(vfprintf);
-    return 0;
-}
-int vsprintf(char *__s, const char *__format, ...) {
-    NOT_IMPL(vsprintf);
-    return 0;
-}
-
 int fscanf(FILE *__stream, const char *__format, ...) {
     NOT_IMPL(fscanf);
     return 0;
@@ -192,10 +178,6 @@ int fgetc(FILE *stream) {
 
 int getc(FILE *stream) { return fgetc(stream); }
 
-int getchar(void) {
-    NOT_IMPL(getchar);
-    return 0;
-}
 
 int fputc(int __c, FILE *__stream) {
     NOT_IMPL(fputc);
@@ -207,20 +189,12 @@ int putc(int __c, FILE *__stream) {
     return 0;
 }
 
-int putchar(int __c) {
-    NOT_IMPL(putchar);
-    return 0;
-}
 
 char *fgets(char *__s, int __n, FILE *__stream) {
     NOT_IMPL(fgets);
     return 0;
 }
 
-char *gets(char *__s) {
-    NOT_IMPL(gets);
-    return 0;
-}
 
 int getline(char **__lineptr, size_t *__n, FILE *__stream) {
     NOT_IMPL(getline);
@@ -229,11 +203,6 @@ int getline(char **__lineptr, size_t *__n, FILE *__stream) {
 
 int fputs(const char *__s, FILE *__stream) {
     NOT_IMPL(fputs);
-    return 0;
-}
-
-int puts(const char *__s) {
-    NOT_IMPL(puts);
     return 0;
 }
 
@@ -330,8 +299,6 @@ int ferror(FILE *stream) {
     }
     return 0;
 }
-
-void perror(const char *__s) { NOT_IMPL(perror); }
 
 int fileno(FILE *__stream) {
     NOT_IMPL(fileno);

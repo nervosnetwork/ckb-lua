@@ -22,8 +22,9 @@
 ** Hence even when the load factor reaches 100%, performance remains good.
 */
 
+#include <math.h>
 #include <limits.h>
-#include "my_math.h"
+#include <string.h>
 
 #include "ldebug.h"
 #include "ldo.h"

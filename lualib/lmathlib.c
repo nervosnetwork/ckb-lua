@@ -7,12 +7,11 @@
 #define lmathlib_c
 #define LUA_LIB
 
-#include "my_float.h"
+#include <float.h>
 #include <limits.h>
-
-#include "my_math.h"
-
+#include <math.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "lprefix.h"
 // #include <time.h>

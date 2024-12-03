@@ -9,7 +9,6 @@
 
 #include <stdarg.h>
 
-#include "my_stddef.h"
 #include "llimits.h"
 #include "lua.h"
 

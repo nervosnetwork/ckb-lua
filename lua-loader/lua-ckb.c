@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
+#include "ckb_cell_fs.h"
+
 #include "blockchain.h"
 
 typedef const char *string;
@@ -61,13 +63,13 @@ struct syscall_function_t {
 
 #define THROW_ERROR(L, s, ...)                             \
     char _error[256];                                      \
-    snprintf_(_error, sizeof(_error) - 1, s, __VA_ARGS__); \
+    snprintf(_error, sizeof(_error) - 1, s, __VA_ARGS__); \
     lua_pushstring(L, _error);                             \
     lua_error(L);
 
 #define PANIC(s, ...)                                        \
     char _error[256];                                        \
-    snprintf_(_error, sizeof(_error) - 1, s, ##__VA_ARGS__); \
+    snprintf(_error, sizeof(_error) - 1, s, ##__VA_ARGS__); \
     ckb_exit(-1);
 
 void lua_pushsegment(lua_State *L, mol_seg_t seg) {

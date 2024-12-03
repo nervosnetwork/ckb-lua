@@ -9,8 +9,7 @@
 
 #include "lgc.h"
 
-#include "my_string.h"
-#include "my_stdio.h"
+#include <string.h>
 
 #include "ldebug.h"
 #include "ldo.h"

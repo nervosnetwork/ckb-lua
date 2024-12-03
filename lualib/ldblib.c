@@ -7,9 +7,8 @@
 #define ldblib_c
 #define LUA_LIB
 
-#include <stdio.h>
 #include <stdlib.h>
-#include "my_string.h"
+#include <string.h>
 
 #include "lauxlib.h"
 #include "lprefix.h"

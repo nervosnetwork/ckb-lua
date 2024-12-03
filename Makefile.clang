@@ -11,35 +11,46 @@ OBJCOPY := llvm-objcopy${LLVM_SUFFIX}
 AR := llvm-ar${LLVM_SUFFIX}
 RANLIB := llvm-ranlib${LLVM_SUFFIX}
 
-CFLAGS := --target=riscv64 -march=rv64imc_zba_zbb_zbc_zbs
-CFLAGS += -D__ISO_C_VISIBLE=1999 -DCKB_DECLARATION_ONLY -DCKB_MALLOC_DECLARATION_ONLY -DCKB_PRINTF_DECLARATION_ONLY -fPIC -g -O3
-CFLAGS += -fno-builtin-printf -fno-builtin-memcmp \
-		-nostdinc -nostdlib\
-		-fdata-sections -ffunction-sections
+CFLAGS :=	--target=riscv64 -march=rv64imc_zba_zbb_zbc_zbs \
+			-g -O3 -nostdinc -fdata-sections -ffunction-sections
 
-CFLAGS += -I lualib -I lualib/c-stdlib -I include/ckb-c-stdlib -I include/ckb-c-stdlib/libc -I include/ckb-c-stdlib/molecule
-CFLAGS += -I deps/compiler-rt-builtins-riscv/compiler-rt/lib/builtins
-CFLAGS += -Wall -Werror -Wno-error=unused-command-line-argument -Wno-error=incompatible-library-redeclaration -Wno-error=invalid-noreturn -Wno-error=unused-function
+CFLAGS += -D__ISO_C_VISIBLE=1999 -DCKB_DECLARATION_ONLY -DCKB_MALLOC_DECLARATION_ONLY -DCKB_PRINTF_DECLARATION_ONLY
+CFLAGS += -isystem deps/musl/release/include/ -Ideps/ckb  -Ic-stdlib
+CFLAGS += -I include/ckb-c-stdlib/molecule -I include
+CFLAGS += -I lualib -I lualib/c-stdlib
 
-LDFLAGS := -static --gc-sections
-LDFLAGS += -Ldeps/compiler-rt-builtins-riscv/build -lcompiler-rt
+LDFLAGS= -static --gc-sections --nostdlib --sysroot deps/musl/release \
+	-Ldeps/musl/release/lib -Ldeps/compiler-rt-builtins-riscv/build -lc -lgcc -lcompiler-rt
+
+LICOMPILER_RT_CFLGAS = \
+	--target=riscv64 -march=rv64imc_zba_zbb_zbc_zbs -mabi=lp64 \
+	-nostdinc \
+	-I ../musl/release/include -I ../ckb-libcxx-builder/release/include \
+	-Os \
+	-fdata-sections -ffunction-sections -fno-builtin -fvisibility=hidden -fomit-frame-pointer \
+	-I compiler-rt/lib/builtins \
+	-DVISIBILITY_HIDDEN -DCOMPILER_RT_HAS_FLOAT16
 
 all: lualib/liblua.a build/lua-loader build/spawnexample
 
-deps/compiler-rt-builtins-riscv/build/libcompiler-rt.a:
-	cd deps/compiler-rt-builtins-riscv && $(MAKE) CC=$(CC) LD=$(LD) OBJCOPY=$(OBJCOPY) AR=$(AR) RANLIB=$(RANLIB)
+deps/musl/release/:
+	cd deps/musl/src/stdio
+	cd deps/musl/ && CLANG=$(CC) ./ckb/build.sh
 
-build/stdlib.o: include/ckb-c-stdlib/libc/src/impl.c
-	@echo $(CC) $(filter-out -DCKB_DECLARATION_ONLY, $(CFLAGS)) -c -o $@ $<
-	@$(CC) $(filter-out -DCKB_DECLARATION_ONLY, $(CFLAGS)) -c -o $@ $<
+deps/ckb-libcxx-builder/release/:
+	cd deps/ckb-libcxx-builder && CLANG=$(CC) ./build.sh
 
-lualib/liblua.a:
-	make -C lualib -f Makefile.clang CC=$(CC) liblua.a
+deps/compiler-rt-builtins-riscv/build/libcompiler-rt.a: deps/musl/release/ deps/ckb-libcxx-builder/release/
+	cd deps/compiler-rt-builtins-riscv && \
+		make CC=$(CC) LD=$(LD) OBJCOPY=$(OBJCOPY) AR=$(AR) RANLIB=$(RANLIB) CFLAGS="$(LICOMPILER_RT_CFLGAS)"
+
+lualib/liblua.a: deps/compiler-rt-builtins-riscv/build/libcompiler-rt.a
+	make -C lualib -f Makefile.clang CC=$(CC) LD=$(LD) OBJCOPY=$(OBJCOPY) AR="$(AR) rc" RANLIB=$(RANLIB) liblua.a
 
 build/spawnexample.o: examples/spawn.c
 	$(CC) -c $(CFLAGS) -o $@ $<
 
-build/spawnexample: build/spawnexample.o build/stdlib.o deps/compiler-rt-builtins-riscv/build/libcompiler-rt.a
+build/spawnexample: build/spawnexample.o deps/compiler-rt-builtins-riscv/build/libcompiler-rt.a
 	$(LD) $(LDFLAGS) -o $@ $^
 	cp $@ $@.debug
 	$(OBJCOPY) --strip-debug --strip-all $@
@@ -47,7 +58,7 @@ build/spawnexample: build/spawnexample.o build/stdlib.o deps/compiler-rt-builtin
 build/lua-loader.o: lua-loader/lua-loader.c
 	$(CC) -c $(CFLAGS) -o $@ $<
 
-build/lua-loader: build/lua-loader.o build/stdlib.o lualib/liblua.a deps/compiler-rt-builtins-riscv/build/libcompiler-rt.a
+build/lua-loader: build/lua-loader.o lualib/liblua.a deps/compiler-rt-builtins-riscv/build/libcompiler-rt.a
 	$(LD) $(LDFLAGS) -o $@ $^
 	cp $@ $@.debug
 	$(OBJCOPY) --strip-debug --strip-all $@
@@ -63,6 +74,13 @@ clean-local:
 	rm -f build/dylibtest
 	rm -f build/dylibexample
 	rm -f build/spawnexample*
+
+clean-deps: clean
+	make -C deps/musl/ clean
+	rm -rf deps/musl/release/
+	rm -rf deps/musl/config.mak
+	rm -rf deps/compiler-rt-builtins-riscv/build/libcompiler-rt.a
+	rm -rf deps/ckb-libcxx-builder/release/*
 
 clean: clean-local
 	make -C lualib clean

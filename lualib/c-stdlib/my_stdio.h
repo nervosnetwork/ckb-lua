@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #include "../../include/ckb_cell_fs.h"
 
@@ -68,22 +69,15 @@ int fgetc(FILE *__stream);
 
 int getc(FILE *__stream);
 
-int getchar(void);
-
 int fputc(int __c, FILE *__stream);
 
 int putc(int __c, FILE *__stream);
 
-int putchar(int __c);
-
 char *fgets(char *__s, int __n, FILE *__stream);
-char *gets(char *__s);
 
 int getline(char **__lineptr, size_t *__n, FILE *__stream);
 
 int fputs(const char *__s, FILE *__stream);
-
-int puts(const char *__s);
 
 int ungetc(int __c, FILE *__stream);
 
@@ -102,8 +96,6 @@ void clearerr(FILE *__stream);
 int feof(FILE *__stream);
 
 int ferror(FILE *__stream);
-
-void perror(const char *__s);
 
 int fileno(FILE *__stream);
 

@@ -9,9 +9,7 @@
 
 #include <limits.h>
 #include <stddef.h>
-#include "my_stddef.h"
-#include "my_stdlib.h"
-#include "my_float.h"
+#include <float.h>
 
 /*
 ** ===================================================================
@@ -551,7 +549,7 @@
 ** (All uses in Lua have only one format item.)
 */
 #if !defined(LUA_USE_C89)
-#define l_sprintf(s, sz, f, i) snprintf_(s, sz, f, i)
+#define l_sprintf(s, sz, f, i) snprintf(s, sz, f, i)
 #else
 #define l_sprintf(s, sz, f, i) ((void)(sz), sprintf(s, f, i))
 #endif

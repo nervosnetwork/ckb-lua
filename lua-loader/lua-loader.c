@@ -4,10 +4,8 @@
 #define lua_c
 
 #include <limits.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "my_string.h"
 
 #include "lauxlib.h"
 #include "lprefix.h"

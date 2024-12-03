@@ -7,11 +7,7 @@
 #define luac_c
 #define LUA_CORE
 
-#include "my_ctype.h"
-#include "my_errno.h"
 #include <stdlib.h>
-#include "my_string.h"
-#include "my_stdio.h"
 
 #include "lauxlib.h"
 #include "ldebug.h"

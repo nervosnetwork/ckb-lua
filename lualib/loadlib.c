@@ -11,13 +11,14 @@
 #define loadlib_c
 #define LUA_LIB
 
-#include "my_stdlib.h"
-#include "my_string.h"
-#include "my_stdio.h"
+#include "lprefix.h"
+
+#include <stdlib.h>
+#include <string.h>
+
+#include "lua.h"
 
 #include "lauxlib.h"
-#include "lprefix.h"
-#include "lua.h"
 #include "lualib.h"
 
 /*

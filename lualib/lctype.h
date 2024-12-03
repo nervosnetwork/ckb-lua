@@ -75,8 +75,6 @@ LUAI_DDEC(const lu_byte luai_ctype_[UCHAR_MAX + 2];)
 ** use standard C ctypes
 */
 
-#include "my_ctype.h"
-
 #define lislalpha(c) (isalpha(c) || (c) == '_')
 #define lislalnum(c) (isalnum(c) || (c) == '_')
 #define lisdigit(c) (isdigit(c))

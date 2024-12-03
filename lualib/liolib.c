@@ -7,12 +7,12 @@
 #define liolib_c
 #define LUA_LIB
 
-#include "my_ctype.h"
-#include "my_errno.h"
-#include "my_locale.h"
+#include <ctype.h>
+#include <errno.h>
+#include <locale.h>
 #include <stdlib.h>
-#include "my_string.h"
-#include "my_stdio.h"
+#include <string.h>
+#include <stdio.h>
 
 #include "lauxlib.h"
 #include "lprefix.h"

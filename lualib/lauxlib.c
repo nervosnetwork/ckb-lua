@@ -7,11 +7,12 @@
 #define lauxlib_c
 #define LUA_LIB
 
-#include "my_errno.h"
+#include <errno.h>
 #include <stdarg.h>
 #include <stdlib.h>
-#include "my_string.h"
-#include "my_stdio.h"
+#include <string.h>
+
+#include <stdio.h>
 
 #include "lprefix.h"
 

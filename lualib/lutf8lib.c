@@ -9,7 +9,6 @@
 
 #include <limits.h>
 #include <stdlib.h>
-#include "my_string.h"
 
 #include "lauxlib.h"
 #include "lprefix.h"
