@@ -3,10 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-FILE *stdin;
-FILE *stdout;
-FILE *stderr;
-
 int ckb_exit(signed char code);
 
 static int s_local_access_enabled = 0;

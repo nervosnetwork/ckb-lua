@@ -35,7 +35,7 @@ all: lualib/liblua.a build/lua-loader build/spawnexample
 
 deps/musl/release/:
 	cd deps/musl/src/stdio
-	cd deps/musl/ && CLANG=$(CC) ./ckb/build.sh
+	cd deps/musl/ && CLANG=$(CC) DISABLE_STD_FILE=true ./ckb/build.sh
 
 deps/ckb-libcxx-builder/release/:
 	cd deps/ckb-libcxx-builder && mkdir -p release && LLVM_VERSION= CLANG=$(CC) ./build.sh
