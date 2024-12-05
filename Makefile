@@ -31,7 +31,13 @@ LICOMPILER_RT_CFLGAS = \
 	-I compiler-rt/lib/builtins \
 	-DVISIBILITY_HIDDEN -DCOMPILER_RT_HAS_FLOAT16
 
+# docker pull docker.io/cryptape/llvm-n-rust:20240630
+DOCKER_IMAGE := docker.io/cryptape/llvm-n-rust@sha256:bafaf76d4f342a69b8691c08e77a330b7740631f3d1d9c9bee4ead521b29ee55
+
 all: lualib/liblua.a build/lua-loader build/spawnexample
+
+all-via-docker:
+	docker run --rm -v `pwd`:/code ${DOCKER_IMAGE} bash -c "cd /code && make"
 
 deps/musl/release/:
 	cd deps/musl/src/stdio
