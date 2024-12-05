@@ -22,6 +22,8 @@ CFLAGS += -I lualib -I lualib/c-stdlib
 LDFLAGS= -static --gc-sections --nostdlib --sysroot deps/musl/release \
 	-Ldeps/musl/release/lib -Ldeps/compiler-rt-builtins-riscv/build -lc -lgcc -lcompiler-rt
 
+LDFLAGS += -wrap=fclose -wrap=fopen -wrap=freopen -wrap=getc -wrap=fread -wrap=fseek -wrap=ftell -wrap=feof -wrap=ferror
+
 LICOMPILER_RT_CFLGAS = \
 	--target=riscv64 -march=rv64imc_zba_zbb_zbc_zbs -mabi=lp64 \
 	-nostdinc \

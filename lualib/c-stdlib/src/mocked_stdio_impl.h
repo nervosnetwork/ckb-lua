@@ -64,32 +64,7 @@ void freefile(FILE *file) {
     free((void *)file);
 }
 
-int remove(const char *__filename) {
-    NOT_IMPL(remove);
-    return 0;
-}
-
-int rename(const char *__old, const char *__new) {
-    NOT_IMPL(rename);
-    return 0;
-}
-
-FILE *tmpfile(void) {
-    NOT_IMPL(tmpfile);
-    return 0;
-}
-
-char *tmpnam(char *__s) {
-    NOT_IMPL(tmpnam);
-    return 0;
-}
-
-char *tempnam(const char *__dir, const char *__pfx) {
-    NOT_IMPL(tempnam);
-    return 0;
-}
-
-int fclose(FILE *stream) {
+int __wrap_fclose(FILE *stream) {
     if (s_local_access_enabled) {
         return ckb_syscall(9009, stream, 0, 0, 0, 0, 0);
     }
@@ -100,12 +75,7 @@ int fclose(FILE *stream) {
     return 0;
 }
 
-int fflush(FILE *__stream) {
-    NOT_IMPL(fflush);
-    return 0;
-}
-
-FILE *fopen(const char *path, const char *mode) {
+FILE *__wrap_fopen(const char *path, const char *mode) {
     if (s_local_access_enabled) {
         return (void *)ckb_syscall(9003, path, mode, 0, 0, 0, 0);
     }
@@ -126,7 +96,7 @@ FILE *fopen(const char *path, const char *mode) {
     return file;
 }
 
-FILE *freopen(const char *path, const char *mode, FILE *stream) {
+FILE *__wrap_freopen(const char *path, const char *mode, FILE *stream) {
     if (s_local_access_enabled) {
         return (void *)ckb_syscall(9004, path, mode, stream, 0, 0, 0);
     }
@@ -134,29 +104,7 @@ FILE *freopen(const char *path, const char *mode, FILE *stream) {
     return 0;
 }
 
-void setbuf(FILE *__stream, char *__buf) { NOT_IMPL(setbuf); }
-
-int setvbuf(FILE *__stream, char *__buf, int __modes, size_t __n) {
-    NOT_IMPL(setvbuf);
-    return 0;
-}
-
-int fscanf(FILE *__stream, const char *__format, ...) {
-    NOT_IMPL(fscanf);
-    return 0;
-}
-
-int scanf(const char *__format, ...) {
-    NOT_IMPL(scanf);
-    return 0;
-}
-
-int sscanf(const char *__s, const char *__format, ...) {
-    NOT_IMPL(sscanf);
-    return 0;
-};
-
-int fgetc(FILE *stream) {
+int __wrap_fgetc(FILE *stream) {
     if (s_local_access_enabled) {
         return ckb_syscall(9008, stream, 0, 0, 0, 0, 0);
     }
@@ -172,40 +120,7 @@ int fgetc(FILE *stream) {
     return *c;
 }
 
-int getc(FILE *stream) { return fgetc(stream); }
-
-
-int fputc(int __c, FILE *__stream) {
-    NOT_IMPL(fputc);
-    return 0;
-}
-
-int putc(int __c, FILE *__stream) {
-    NOT_IMPL(putc);
-    return 0;
-}
-
-
-char *fgets(char *__s, int __n, FILE *__stream) {
-    NOT_IMPL(fgets);
-    return 0;
-}
-
-
-int getline(char **__lineptr, size_t *__n, FILE *__stream) {
-    NOT_IMPL(getline);
-    return 0;
-}
-
-int fputs(const char *__s, FILE *__stream) {
-    NOT_IMPL(fputs);
-    return 0;
-}
-
-int ungetc(int __c, FILE *__stream) {
-    NOT_IMPL(ungetc);
-    return 0;
-}
+int __wrap_getc(FILE *stream) { return fgetc(stream); }
 
 int isvalidfile(FILE *stream) {
     if (stream == 0 || stream->file->rc == 0) {
@@ -220,7 +135,7 @@ void mustbevaildfile(FILE *stream) {
     }
 }
 
-size_t fread(void *ptr, size_t size, size_t nitems, FILE *stream) {
+size_t __wrap_fread(void *ptr, size_t size, size_t nitems, FILE *stream) {
     if (s_local_access_enabled) {
         return ckb_syscall(9005, ptr, size, nitems, stream, 0, 0);
     }
@@ -245,12 +160,7 @@ size_t fread(void *ptr, size_t size, size_t nitems, FILE *stream) {
     return (bytes_to_read + s - 1) / s;
 }
 
-size_t fwrite(const void *__ptr, size_t __size, size_t __n, FILE *__s) {
-    NOT_IMPL(fwrite);
-    return 0;
-}
-
-int fseek(FILE *stream, long int offset, int whence) {
+int __wrap_fseek(FILE *stream, long int offset, int whence) {
     if (s_local_access_enabled) {
         return ckb_syscall(9011, stream, offset, whence, 0, 0, 0);
     }
@@ -258,7 +168,7 @@ int fseek(FILE *stream, long int offset, int whence) {
     return 0;
 }
 
-long int ftell(FILE *stream) {
+long int __wrap_ftell(FILE *stream) {
     if (s_local_access_enabled) {
         return ckb_syscall(9010, stream, 0, 0, 0, 0, 0);
     }
@@ -266,11 +176,7 @@ long int ftell(FILE *stream) {
     return 0;
 }
 
-void rewind(FILE *__stream) { NOT_IMPL(rewind); }
-
-void clearerr(FILE *__stream) { NOT_IMPL(clearerr); }
-
-int feof(FILE *stream) {
+int __wrap_feof(FILE *stream) {
     if (s_local_access_enabled) {
         return ckb_syscall(9006, stream, 0, 0, 0, 0, 0);
     }
@@ -283,7 +189,7 @@ int feof(FILE *stream) {
     return 0;
 }
 
-int ferror(FILE *stream) {
+int __wrap_ferror(FILE *stream) {
     if (s_local_access_enabled) {
         return ckb_syscall(9007, stream, 0, 0, 0, 0, 0);
     }
@@ -293,20 +199,5 @@ int ferror(FILE *stream) {
     if (stream == 0 || stream->file->rc == 0) {
         return 1;
     }
-    return 0;
-}
-
-int fileno(FILE *__stream) {
-    NOT_IMPL(fileno);
-    return 0;
-}
-
-FILE *popen(const char *__command, const char *__modes) {
-    NOT_IMPL(popen);
-    return 0;
-}
-
-int pclose(FILE *__stream) {
-    NOT_IMPL(pclose);
     return 0;
 }
