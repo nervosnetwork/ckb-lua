@@ -27,6 +27,6 @@ jobs:
         ckb-debugger --version
     - name: Run cases
       run: |
-        cd tests/official && make ci
+        cd tests/official && make -f Makefile.gcc ci
         cd ../test_cases && make ci
         cd ../ckb-c-stdlib-tests && make all-via-docker && make ci
