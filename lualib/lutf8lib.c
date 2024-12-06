@@ -10,6 +10,10 @@
 #include <limits.h>
 #include <stdlib.h>
 
+#if defined(__GNUC__) && !defined(__clang__)
+#include "my_string.h"
+#endif
+
 #include "lauxlib.h"
 #include "lprefix.h"
 #include "lua.h"

@@ -9,6 +9,10 @@
 
 #include <stdarg.h>
 
+#if defined(__GNUC__) && !defined(__clang__)
+#include "my_stddef.h"
+#endif
+
 #include "llimits.h"
 #include "lua.h"
 

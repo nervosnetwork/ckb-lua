@@ -12,6 +12,12 @@
 #include <limits.h>
 #include <stdlib.h>
 
+#if defined(__GNUC__) && !defined(__clang__)
+#include "my_math.h"
+#include "my_float.h"
+#include "my_stdint.h"
+#endif
+
 #include "ldebug.h"
 #include "ldo.h"
 #include "lgc.h"

@@ -23,7 +23,12 @@
 */
 
 #include <limits.h>
+
+#if defined(__GNUC__) && !defined(__clang__)
+#include "my_math.h"
+#elif defined(__clang__)
 #include <string.h>
+#endif
 
 #include "ldebug.h"
 #include "ldo.h"

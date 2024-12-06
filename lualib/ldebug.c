@@ -11,7 +11,12 @@
 
 #include <stdarg.h>
 #include <stddef.h>
+
+#if defined(__GNUC__) && !defined(__clang__)
+#include "my_string.h"
+#elif defined(__clang__)
 #include <string.h>
+#endif
 
 #include "lapi.h"
 #include "lcode.h"

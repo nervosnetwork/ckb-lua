@@ -10,12 +10,13 @@
 #include "ldo.h"
 
 #include <stdlib.h>
-#include <string.h>
 
 #if defined(__GNUC__) && !defined(__clang__)
 #include "my_setjmp.h"
 #include "my_string.h"
 #include "my_stdlib.h"
+#elif defined(__clang__)
+#include <string.h>
 #endif
 
 #include "lapi.h"

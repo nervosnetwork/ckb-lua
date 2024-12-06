@@ -9,8 +9,11 @@
 
 #include <stdlib.h>
 
+#include "my_stdio.h"
 #if defined(__GNUC__) && !defined(__clang__)
+#include "my_ctype.h"
 #include "my_errno.h"
+#include "my_string.h"
 #elif defined(__clang__)
 #include <errno.h>
 #endif

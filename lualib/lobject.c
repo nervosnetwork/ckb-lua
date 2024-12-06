@@ -11,12 +11,13 @@
 
 #include <stdarg.h>
 #include <stdlib.h>
-#include <string.h>
 
 #if defined(__GNUC__) && !defined(__clang__)
 #include "my_locale.h"
 #include "my_math.h"
 #include "my_string.h"
+#elif defined(__clang__)
+#include <string.h>
 #endif
 
 #include "my_stdio.h"

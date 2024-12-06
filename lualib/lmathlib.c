@@ -10,6 +10,12 @@
 #include <limits.h>
 #include <stdlib.h>
 
+#if defined(__GNUC__) && !defined(__clang__)
+#include "my_float.h"
+#include "my_math.h"
+#endif
+
+
 #include "lprefix.h"
 // #include <time.h>
 

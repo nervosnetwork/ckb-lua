@@ -17,7 +17,7 @@ jobs:
         luaVersion: "5.4"
     - name: Build
       run: |
-        make all-via-docker
+        make -f Makefile.gcc all-via-docker
     - name: Install ckb-debugger
       run: |
         wget 'https://github.com/nervosnetwork/ckb-standalone-debugger/releases/download/v0.118.0/ckb-debugger-linux-x64.tar.gz'
@@ -27,6 +27,6 @@ jobs:
         ckb-debugger --version
     - name: Run cases
       run: |
-        cd tests/official && make -f Makefile.gcc ci
+        cd tests/official && make ci
         cd ../test_cases && make ci
         cd ../ckb-c-stdlib-tests && make all-via-docker && make ci

@@ -10,7 +10,6 @@
 #include <limits.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include <string.h>
 
 #if defined(__GNUC__) && !defined(__clang__)
 #include "my_ctype.h"
@@ -19,6 +18,8 @@
 #include "my_math.h"
 #include "my_string.h"
 #include "my_stdio.h"
+#elif defined(__clang__)
+#include <string.h>
 #endif
 
 #include "lauxlib.h"

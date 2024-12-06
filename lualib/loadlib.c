@@ -11,10 +11,17 @@
 #define loadlib_c
 #define LUA_LIB
 
+#if defined(__GNUC__) && !defined(__clang__)
+#include "my_stdlib.h"
+#include "my_string.h"
+#include "my_stdio.h"
+#elif defined(__clang__)
+#include <string.h>
+#endif
+
 #include "lprefix.h"
 
 #include <stdlib.h>
-#include <string.h>
 
 #include "lua.h"
 
