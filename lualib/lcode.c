@@ -11,7 +11,6 @@
 
 #include <limits.h>
 #include <stdlib.h>
-#include <math.h>
 
 #include "ldebug.h"
 #include "ldo.h"
@@ -1633,7 +1632,7 @@ void luaK_posfix(FuncState *fs, BinOpr opr, expdesc *e1, expdesc *e2,
             if (finishbinexpneg(fs, e1, e2, OP_ADDI, line, TM_SUB))
                 break; /* coded as (r1 + -I) */
                        /* ELSE */
-        }              /* FALLTHROUGH */
+        } /* FALLTHROUGH */
         case OPR_DIV:
         case OPR_IDIV:
         case OPR_MOD:

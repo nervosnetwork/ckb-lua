@@ -368,7 +368,7 @@ static void auxsort(lua_State *L, IdxT lo, IdxT up, unsigned int rnd) {
         }
         if ((up - lo) / 128 > n)      /* partition too imbalanced? */
             rnd = l_randomizePivot(); /* try a new randomization */
-    }                                 /* tail call auxsort(L, lo, up, rnd) */
+    } /* tail call auxsort(L, lo, up, rnd) */
 }
 
 static int sort(lua_State *L) {

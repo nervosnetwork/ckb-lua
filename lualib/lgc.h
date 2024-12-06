@@ -120,7 +120,7 @@
 ** some gc parameters are stored divided by 4 to allow a maximum value
 ** up to 1023 in a 'lu_byte'.
 */
-#define getgcparam(p) ((p)*4)
+#define getgcparam(p) ((p) * 4)
 #define setgcparam(p, v) ((p) = (v) / 4)
 
 #define LUAI_GCMUL 100

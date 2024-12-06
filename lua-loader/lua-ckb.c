@@ -7,8 +7,6 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-#include "ckb_cell_fs.h"
-
 #include "blockchain.h"
 
 typedef const char *string;
@@ -61,14 +59,18 @@ struct syscall_function_t {
 // Utilities
 /////////////////////////////////////////////////////
 
-#define THROW_ERROR(L, s, ...)                             \
-    char _error[256];                                      \
+#if defined(__GNUC__) && !defined(__clang__)
+#define snprintf snprintf_
+#endif
+
+#define THROW_ERROR(L, s, ...)                            \
+    char _error[256];                                     \
     snprintf(_error, sizeof(_error) - 1, s, __VA_ARGS__); \
-    lua_pushstring(L, _error);                             \
+    lua_pushstring(L, _error);                            \
     lua_error(L);
 
-#define PANIC(s, ...)                                        \
-    char _error[256];                                        \
+#define PANIC(s, ...)                                       \
+    char _error[256];                                       \
     snprintf(_error, sizeof(_error) - 1, s, ##__VA_ARGS__); \
     ckb_exit(-1);
 
@@ -457,8 +459,7 @@ int lua_ckb_unpack_witnessargs(lua_State *L) {
         MolReader_WitnessArgs_get_lock(&witnessargs_seg);
     if (!MolReader_BytesOpt_is_none(&witness_lock_seg)) {
         lua_pushstring(L, "lock");
-        mol_seg_t witness_lock =
-            MolReader_Bytes_raw_bytes(&witness_lock_seg);
+        mol_seg_t witness_lock = MolReader_Bytes_raw_bytes(&witness_lock_seg);
         lua_pushsegment(L, witness_lock);
         lua_rawset(L, -3);
     }
@@ -831,10 +832,10 @@ int lua_ckb_spawn(lua_State *L) {
     uint64_t bounds = fields[3].arg.u64;
 
     size_t argv_len = lua_rawlen(L, 5);
-    const char **argv = malloc(argv_len * sizeof(char*));
+    const char **argv = malloc(argv_len * sizeof(char *));
     for (int i = 0; i < argv_len; i++) {
-        lua_rawgeti(L, 5, i+1);
-        const char* s = lua_tostring(L, -1);
+        lua_rawgeti(L, 5, i + 1);
+        const char *s = lua_tostring(L, -1);
         argv[i] = s;
         lua_pop(L, 1);
     }
@@ -842,7 +843,7 @@ int lua_ckb_spawn(lua_State *L) {
     uint64_t *ifds = malloc((ifds_len + 1) * sizeof(uint64_t));
     ifds[ifds_len] = 0;
     for (int i = 0; i < ifds_len; i++) {
-        lua_rawgeti(L, 6, i+1);
+        lua_rawgeti(L, 6, i + 1);
         uint64_t n = lua_tointeger(L, -1);
         ifds[i] = n;
         lua_pop(L, 1);
@@ -882,10 +883,10 @@ int lua_ckb_spawn_cell(lua_State *L) {
     uint64_t length = fields[3].arg.u64;
 
     size_t argv_len = lua_rawlen(L, 5);
-    const char **argv = malloc(argv_len * sizeof(char*));
+    const char **argv = malloc(argv_len * sizeof(char *));
     for (int i = 0; i < argv_len; i++) {
-        lua_rawgeti(L, 5, i+1);
-        const char* s = lua_tostring(L, -1);
+        lua_rawgeti(L, 5, i + 1);
+        const char *s = lua_tostring(L, -1);
         argv[i] = s;
         lua_pop(L, 1);
     }
@@ -893,7 +894,7 @@ int lua_ckb_spawn_cell(lua_State *L) {
     uint64_t *ifds = malloc((ifds_len + 1) * sizeof(uint64_t));
     ifds[ifds_len] = 0;
     for (int i = 0; i < ifds_len; i++) {
-        lua_rawgeti(L, 6, i+1);
+        lua_rawgeti(L, 6, i + 1);
         uint64_t n = lua_tointeger(L, -1);
         ifds[i] = n;
         lua_pop(L, 1);
@@ -1012,7 +1013,7 @@ int lua_ckb_inherited_fds(lua_State *L) {
     lua_newtable(L);
     for (int i = 0; i < length; i++) {
         lua_pushinteger(L, fds[i]);
-        lua_rawseti(L, -2, i+1);
+        lua_rawseti(L, -2, i + 1);
     }
     lua_pushnil(L);
     return 2;

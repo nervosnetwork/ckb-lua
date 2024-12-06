@@ -7,6 +7,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if defined(__GNUC__) && !defined(__clang__)
+#include "my_string.h"
+#endif
+
 #include "lauxlib.h"
 #include "lprefix.h"
 #include "lua.h"

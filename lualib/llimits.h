@@ -55,7 +55,7 @@ typedef signed char ls_byte;
 /*
 ** test whether an unsigned value is a power of 2 (or zero)
 */
-#define ispow2(x) (((x) & ((x)-1)) == 0)
+#define ispow2(x) (((x) & ((x) - 1)) == 0)
 
 /* number of chars of a literal string without the ending \0 */
 #define LL(x) (sizeof(x) / sizeof(char) - 1)
@@ -65,7 +65,7 @@ typedef signed char ls_byte;
 ** this is for hashing only; there is no problem if the integer
 ** cannot hold the whole pointer value
 */
-#define point2uint(p) ((unsigned int)((size_t)(p)&UINT_MAX))
+#define point2uint(p) ((unsigned int)((size_t)(p) & UINT_MAX))
 
 /* types of 'usual argument conversions' for lua_Number and lua_Integer */
 typedef LUAI_UACNUMBER l_uacNumber;

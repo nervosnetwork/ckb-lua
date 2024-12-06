@@ -7,12 +7,19 @@
 #define liolib_c
 #define LUA_LIB
 
-#include <ctype.h>
+#if defined(__GNUC__) && !defined(__clang__)
+#include "my_ctype.h"
+#include "my_errno.h"
+#include "my_locale.h"
+#include "my_string.h"
+#include "my_stdio.h"
+#elif defined(__clang__)
 #include <errno.h>
-#include <locale.h>
+#include <stdio.h>
+#endif
+
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 #include "lauxlib.h"
 #include "lprefix.h"
@@ -436,7 +443,7 @@ static int read_number(lua_State *L, FILE *f) {
     do {
         rn.c = l_getc(rn.f);
     } while (isspace(rn.c)); /* skip spaces */
-    test2(&rn, "-+");        /* optional sign */
+    test2(&rn, "-+"); /* optional sign */
     if (test2(&rn, "00")) {
         if (test2(&rn, "xX"))
             hex = 1; /* numeral is hexadecimal */
@@ -481,9 +488,9 @@ static int read_line(lua_State *L, FILE *f, int chop) {
         l_unlockfile(f);
         luaL_addsize(&b, i);
     } while (c != EOF && c != '\n'); /* repeat until end of line */
-    if (!chop && c == '\n')          /* want a newline and have one? */
-        luaL_addchar(&b, c);         /* add ending newline to result */
-    luaL_pushresult(&b);             /* close buffer */
+    if (!chop && c == '\n')  /* want a newline and have one? */
+        luaL_addchar(&b, c); /* add ending newline to result */
+    luaL_pushresult(&b);     /* close buffer */
     /* return ok if read something (either a newline or something else) */
     return (c == '\n' || lua_rawlen(L, -1) > 0);
 }

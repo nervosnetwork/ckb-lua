@@ -9,12 +9,15 @@
 
 #include "lobject.h"
 
-#include <float.h>
-#include <locale.h>
-#include <math.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+
+#if defined(__GNUC__) && !defined(__clang__)
+#include "my_locale.h"
+#include "my_math.h"
+#include "my_string.h"
+#endif
 
 #include "my_stdio.h"
 

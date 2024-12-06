@@ -6,7 +6,16 @@ LD := $(TARGET)-gcc
 OBJCOPY := $(TARGET)-objcopy
 
 # See comments in lualib/Makefile for why __ISO_C_VISIBLE=1999 is needed
-CFLAGS := -D__ISO_C_VISIBLE=1999 -fPIC -O3 -fno-builtin -nostdinc -nostdlib -nostartfiles -fvisibility=hidden -fdata-sections -ffunction-sections -I lualib -I lualib/c-stdlib -I include/ckb-c-stdlib -I include/ckb-c-stdlib/libc -I include/ckb-c-stdlib/molecule -Wall -Werror -Wno-nonnull -Wno-nonnull-compare -Wno-unused-function -Wno-error=maybe-uninitialized -g
+CFLAGS := \
+	-D__ISO_C_VISIBLE=1999 \
+	-fPIC -O3 -fno-builtin -nostdinc -nostdlib -nostartfiles -fvisibility=hidden -fdata-sections -ffunction-sections \
+	-I lualib \
+	-I lualib/c-stdlib \
+	-I lualib/c-stdlib/my_gnu \
+	-I include/ckb-c-stdlib \
+	-I include/ckb-c-stdlib/libc \
+	-I include/ckb-c-stdlib/molecule \
+	-Wall -Werror -Wno-nonnull -Wno-nonnull-compare -Wno-unused-function -Wno-error=maybe-uninitialized -g
 
 LDFLAGS := -nostdlib -nostartfiles -fno-builtin -Wl,-static -fdata-sections -ffunction-sections -Wl,--gc-sections
 
@@ -19,13 +28,13 @@ PORT ?= 9999
 all: lualib/liblua.a build/lua-loader build/libckblua.so build/dylibtest build/dylibexample build/spawnexample
 
 all-via-docker:
-	docker run --rm -v `pwd`:/code ${BUILDER_DOCKER} bash -c "cd /code && make"
+	docker run --rm -v `pwd`:/code ${BUILDER_DOCKER} bash -c "cd /code && make -f Makefile.gcc"
 
 docker-interactive:
 	docker run --user ${DOCKER_USER} --rm -it -v "${CURRENT_DIR}:/code" --workdir /code --entrypoint /bin/bash ${DOCKER_EXTRA_FLAGS} ${BUILDER_DOCKER}
 
 lualib/liblua.a:
-	make -C lualib liblua.a
+	make -C lualib -f Makefile.gcc liblua.a
 
 build/dylibtest: tests/test_cases/dylibtest.c
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< lualib/liblua.a $(shell $(CC) --print-search-dirs | sed -n '/install:/p' | sed 's/install:\s*//g')libgcc.a 
@@ -37,7 +46,7 @@ build/spawnexample: examples/spawn.c
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< lualib/liblua.a $(shell $(CC) --print-search-dirs | sed -n '/install:/p' | sed 's/install:\s*//g')libgcc.a
 
 build/lua-loader.o: lua-loader/lua-loader.c
-	$(CC) -c $(CFLAGS) -o $@ $<
+	$(CC) -c $(CFLAGS) -Iinclude -o $@ $<
 
 # We need the soft floating point number support from libgcc.
 # Note when -nostdlib is specified, libgcc is not linked to the program automatically.

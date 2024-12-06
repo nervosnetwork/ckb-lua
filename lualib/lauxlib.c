@@ -7,7 +7,12 @@
 #define lauxlib_c
 #define LUA_LIB
 
+#if defined(__GNUC__) && !defined(__clang__)
+#include "my_errno.h"
+#elif defined(__clang__)
 #include <errno.h>
+#endif
+
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>

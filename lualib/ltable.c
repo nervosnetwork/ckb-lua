@@ -22,7 +22,6 @@
 ** Hence even when the load factor reaches 100%, performance remains good.
 */
 
-#include <math.h>
 #include <limits.h>
 #include <string.h>
 
@@ -743,7 +742,7 @@ const TValue *luaH_get(Table *t, const TValue *key) {
                                   F2Ieq)) /* integral index? */
                 return luaH_getint(t, k); /* use specialized version */
                                           /* else... */
-        }                                 /* FALLTHROUGH */
+        } /* FALLTHROUGH */
         default:
             return getgeneric(t, key, 0);
     }

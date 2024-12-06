@@ -65,10 +65,10 @@ typedef struct TValue {
 #define rawtt(o) ((o)->tt_)
 
 /* tag with no variants (bits 0-3) */
-#define novariant(t) ((t)&0x0F)
+#define novariant(t) ((t) & 0x0F)
 
 /* type tag of a TValue (bits 0-3 for tags + variant bits 4-5) */
-#define withvariant(t) ((t)&0x3F)
+#define withvariant(t) ((t) & 0x3F)
 #define ttypetag(o) withvariant(rawtt(o))
 
 /* type of a TValue */
@@ -774,7 +774,7 @@ typedef struct Table {
 ** 'module' operation for hashing (size is always a power of 2)
 */
 #define lmod(s, size) \
-    (check_exp((size & (size - 1)) == 0, (cast_int((s) & ((size)-1)))))
+    (check_exp((size & (size - 1)) == 0, (cast_int((s) & ((size) - 1)))))
 
 #define twoto(x) (1 << (x))
 #define sizenode(t) (twoto((t)->lsizenode))

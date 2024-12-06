@@ -9,6 +9,12 @@
 
 #include <stdlib.h>
 
+#if defined(__GNUC__) && !defined(__clang__)
+#include "my_errno.h"
+#elif defined(__clang__)
+#include <errno.h>
+#endif
+
 #include "lauxlib.h"
 #include "ldebug.h"
 #include "lobject.h"

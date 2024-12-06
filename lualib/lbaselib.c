@@ -7,7 +7,6 @@
 #define lbaselib_c
 #define LUA_LIB
 
-#include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -99,8 +98,8 @@ static int luaB_tonumber(lua_State *L) {
         if (b_str2int(s, (int)base, &n) == s + l) {
             lua_pushinteger(L, n);
             return 1;
-        }             /* else not a number */
-    }                 /* else not a number */
+        } /* else not a number */
+    } /* else not a number */
     luaL_pushfail(L); /* not a number */
     return 1;
 }

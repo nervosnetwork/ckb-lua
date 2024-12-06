@@ -7,11 +7,8 @@
 #define lmathlib_c
 #define LUA_LIB
 
-#include <float.h>
 #include <limits.h>
-#include <math.h>
 #include <stdlib.h>
-#include <time.h>
 
 #include "lprefix.h"
 // #include <time.h>
@@ -265,7 +262,7 @@ static int math_type(lua_State *L) {
 */
 
 /* avoid using extra bits when needed */
-#define trim64(x) ((x)&0xffffffffffffffffu)
+#define trim64(x) ((x) & 0xffffffffffffffffu)
 
 /* rotate left 'x' by 'n' bits */
 static Rand64 rotl(Rand64 x, int n) {
@@ -333,7 +330,7 @@ typedef struct Rand64 {
 */
 
 /* avoid using extra bits when needed */
-#define trim32(x) ((x)&0xffffffffu)
+#define trim32(x) ((x) & 0xffffffffu)
 
 /*
 ** basic operations on 'Rand64' values

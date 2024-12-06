@@ -112,7 +112,11 @@ struct lua_longjmp; /* defined in ldo.c */
 ** is thread safe
 */
 #if !defined(l_signalT)
+#if defined(__GNUC__) && !defined(__clang__)
+#include "my_signal.h"
+#elif defined(__clang__)
 #include <signal.h>
+#endif  // __GNUC__  !__clang__
 #define l_signalT sig_atomic_t
 #endif
 
@@ -210,7 +214,7 @@ typedef struct CallInfo {
 */
 #define getcistrecst(ci) (((ci)->callstatus >> CIST_RECST) & 7)
 #define setcistrecst(ci, st)                                                \
-    check_exp(((st)&7) == (st), /* status must fit in three bits */         \
+    check_exp(((st) & 7) == (st), /* status must fit in three bits */       \
               ((ci)->callstatus = ((ci)->callstatus & ~(7 << CIST_RECST)) | \
                                   ((st) << CIST_RECST)))
 
@@ -222,7 +226,7 @@ typedef struct CallInfo {
 
 /* assume that CIST_OAH has offset 0 and that 'v' is strictly 0/1 */
 #define setoah(st, v) ((st) = ((st) & ~CIST_OAH) | (v))
-#define getoah(st) ((st)&CIST_OAH)
+#define getoah(st) ((st) & CIST_OAH)
 
 /*
 ** 'global state', shared by all threads of this state

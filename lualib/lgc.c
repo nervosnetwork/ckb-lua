@@ -678,7 +678,7 @@ static void convergeephemerons(global_State *g) {
                 changed = 1; /* will have to revisit all ephemeron tables */
             }
         }
-        dir = !dir;    /* invert direction next time */
+        dir = !dir; /* invert direction next time */
     } while (changed); /* repeat until no more changes */
 }
 
