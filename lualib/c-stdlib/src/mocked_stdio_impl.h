@@ -15,7 +15,7 @@
 #define __wrap_feof feof
 #define __wrap_ferror ferror
 
-#endif // __GNUC__ && !__clang__
+#endif  // __GNUC__ && !__clang__
 
 int ckb_exit(signed char code);
 
@@ -134,7 +134,13 @@ int __wrap_fgetc(FILE *stream) {
     return *c;
 }
 
-int __wrap_getc(FILE *stream) { return fgetc(stream); }
+int __wrap_getc(FILE *stream) {
+#if defined(__GNUC__) && !defined(__clang__)
+    return fgetc(stream);
+#elif defined(__clang__)
+    return __wrap_fgetc(stream);
+#endif
+}
 
 int isvalidfile(FILE *stream) {
     if (stream == 0 || stream->file->rc == 0) {
