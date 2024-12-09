@@ -1568,7 +1568,7 @@ static void test_then_block(LexState *ls, int *escapelist) {
         enterblock(fs, &bl, 0);     /* must enter block before 'goto' */
         newgotoentry(ls, luaS_newliteral(ls->L, "break"), line, v.t);
         while (testnext(ls, ';')) {
-        }                          /* skip semicolons */
+        } /* skip semicolons */
         if (block_follow(ls, 0)) { /* jump is the entire block? */
             leaveblock(fs);
             return; /* and that is it */

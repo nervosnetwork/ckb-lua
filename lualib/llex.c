@@ -9,8 +9,10 @@
 
 #include "llex.h"
 
+#if defined(__GNUC__) && !defined(__clang__)
 #include "my_locale.h"
 #include "my_string.h"
+#endif
 
 #include "lctype.h"
 #include "ldebug.h"

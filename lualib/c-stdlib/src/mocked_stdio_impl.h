@@ -1,11 +1,21 @@
-#include "../my_stdio.h"
+#include "my_stdio.h"
 
 #include <stdlib.h>
 #include <string.h>
 
-FILE *stdin;
-FILE *stdout;
-FILE *stderr;
+#if defined(__GNUC__) && !defined(__clang__)
+#define __wrap_fclose fclose
+#define __wrap_fopen fopen
+#define __wrap_freopen freopen
+// #define __wrap_getc getc
+#define __wrap_fgetc fgetc
+#define __wrap_fread fread
+#define __wrap_fseek fseek
+#define __wrap_ftell ftell
+#define __wrap_feof feof
+#define __wrap_ferror ferror
+
+#endif  // __GNUC__ && !__clang__
 
 int ckb_exit(signed char code);
 
@@ -68,6 +78,156 @@ void freefile(FILE *file) {
     free((void *)file);
 }
 
+int __wrap_fclose(FILE *stream) {
+    if (s_local_access_enabled) {
+        return ckb_syscall(9009, stream, 0, 0, 0, 0, 0);
+    }
+    if (!fs_access_enabled()) {
+        NOT_IMPL(fclose);
+    }
+    freefile(stream);
+    return 0;
+}
+
+FILE *__wrap_fopen(const char *path, const char *mode) {
+    if (s_local_access_enabled) {
+        return (void *)ckb_syscall(9003, path, mode, 0, 0, 0, 0);
+    }
+
+    if (!fs_access_enabled()) {
+        NOT_IMPL(fopen);
+    }
+
+    FILE *file = allocfile();
+    if (file == 0) {
+        return 0;
+    }
+
+    int ret = ckb_get_file(path, &file->file);
+    if (ret != 0) {
+        return 0;
+    }
+    return file;
+}
+
+FILE *__wrap_freopen(const char *path, const char *mode, FILE *stream) {
+    if (s_local_access_enabled) {
+        return (void *)ckb_syscall(9004, path, mode, stream, 0, 0, 0);
+    }
+    NOT_IMPL(freopen);
+    return 0;
+}
+
+int __wrap_fgetc(FILE *stream) {
+    if (s_local_access_enabled) {
+        return ckb_syscall(9008, stream, 0, 0, 0, 0, 0);
+    }
+    if (!fs_access_enabled()) {
+        NOT_IMPL(fgetc);
+    }
+    if (stream == 0 || stream->file->rc == 0 ||
+        stream->offset == stream->file->size) {
+        return -1;  // EOF
+    }
+    unsigned char *c = (unsigned char *)stream->file->content + stream->offset;
+    stream->offset++;
+    return *c;
+}
+
+int __wrap_getc(FILE *stream) {
+#if defined(__GNUC__) && !defined(__clang__)
+    return fgetc(stream);
+#elif defined(__clang__)
+    return __wrap_fgetc(stream);
+#endif
+}
+
+int isvalidfile(FILE *stream) {
+    if (stream == 0 || stream->file->rc == 0) {
+        return 1;
+    }
+    return 0;
+}
+
+void mustbevaildfile(FILE *stream) {
+    if (isvalidfile(stream) != 0) {
+        ckb_exit(1);
+    }
+}
+
+size_t __wrap_fread(void *ptr, size_t size, size_t nitems, FILE *stream) {
+    if (s_local_access_enabled) {
+        return ckb_syscall(9005, ptr, size, nitems, stream, 0, 0);
+    }
+    if (!fs_access_enabled()) {
+        NOT_IMPL(fread);
+    }
+    mustbevaildfile(stream);
+    // TODO: How do we handle error here?
+    if (stream->offset == stream->file->size) {
+        return 0;
+    }
+    // TODO: handle the case size * nitems is greater than uint32_t max
+    // handle size * ntimes overflowing
+    uint32_t bytes_to_read = (uint32_t)size * (uint32_t)nitems;
+    if (bytes_to_read > stream->file->size - stream->offset) {
+        bytes_to_read = stream->file->size - stream->offset;
+    }
+    memcpy(ptr, stream->file->content + stream->offset, bytes_to_read);
+    stream->offset = stream->offset + bytes_to_read;
+    // The return value should be the number of items written to the ptr
+    uint32_t s = size;
+    return (bytes_to_read + s - 1) / s;
+}
+
+int __wrap_fseek(FILE *stream, long int offset, int whence) {
+    if (s_local_access_enabled) {
+        return ckb_syscall(9011, stream, offset, whence, 0, 0, 0);
+    }
+    NOT_IMPL(fseek);
+    return 0;
+}
+
+long int __wrap_ftell(FILE *stream) {
+    if (s_local_access_enabled) {
+        return ckb_syscall(9010, stream, 0, 0, 0, 0, 0);
+    }
+    NOT_IMPL(ftell);
+    return 0;
+}
+
+int __wrap_feof(FILE *stream) {
+    if (s_local_access_enabled) {
+        return ckb_syscall(9006, stream, 0, 0, 0, 0, 0);
+    }
+    if (!fs_access_enabled()) {
+        NOT_IMPL(feof);
+    }
+    if (stream->offset == stream->file->size) {
+        return 1;
+    }
+    return 0;
+}
+
+int __wrap_ferror(FILE *stream) {
+    if (s_local_access_enabled) {
+        return ckb_syscall(9007, stream, 0, 0, 0, 0, 0);
+    }
+    if (!fs_access_enabled()) {
+        NOT_IMPL(ferror);
+    }
+    if (stream == 0 || stream->file->rc == 0) {
+        return 1;
+    }
+    return 0;
+}
+
+#if defined(__GNUC__) && !defined(__clang__)
+
+FILE *stdin;
+FILE *stdout;
+FILE *stderr;
+
 int remove(const char *__filename) {
     NOT_IMPL(remove);
     return 0;
@@ -93,48 +253,8 @@ char *tempnam(const char *__dir, const char *__pfx) {
     return 0;
 }
 
-int fclose(FILE *stream) {
-    if (s_local_access_enabled) {
-        return ckb_syscall(9009, stream, 0, 0, 0, 0, 0);
-    }
-    if (!fs_access_enabled()) {
-        NOT_IMPL(fclose);
-    }
-    freefile(stream);
-    return 0;
-}
-
 int fflush(FILE *__stream) {
     NOT_IMPL(fflush);
-    return 0;
-}
-
-FILE *fopen(const char *path, const char *mode) {
-    if (s_local_access_enabled) {
-        return (void *)ckb_syscall(9003, path, mode, 0, 0, 0, 0);
-    }
-
-    if (!fs_access_enabled()) {
-        NOT_IMPL(fopen);
-    }
-
-    FILE *file = allocfile();
-    if (file == 0) {
-        return 0;
-    }
-
-    int ret = ckb_get_file(path, &file->file);
-    if (ret != 0) {
-        return 0;
-    }
-    return file;
-}
-
-FILE *freopen(const char *path, const char *mode, FILE *stream) {
-    if (s_local_access_enabled) {
-        return (void *)ckb_syscall(9004, path, mode, stream, 0, 0, 0);
-    }
-    NOT_IMPL(freopen);
     return 0;
 }
 
@@ -173,22 +293,6 @@ int sscanf(const char *__s, const char *__format, ...) {
     NOT_IMPL(sscanf);
     return 0;
 };
-
-int fgetc(FILE *stream) {
-    if (s_local_access_enabled) {
-        return ckb_syscall(9008, stream, 0, 0, 0, 0, 0);
-    }
-    if (!fs_access_enabled()) {
-        NOT_IMPL(fgetc);
-    }
-    if (stream == 0 || stream->file->rc == 0 ||
-        stream->offset == stream->file->size) {
-        return -1;  // EOF
-    }
-    unsigned char *c = (unsigned char *)stream->file->content + stream->offset;
-    stream->offset++;
-    return *c;
-}
 
 int getc(FILE *stream) { return fgetc(stream); }
 
@@ -242,94 +346,14 @@ int ungetc(int __c, FILE *__stream) {
     return 0;
 }
 
-int isvalidfile(FILE *stream) {
-    if (stream == 0 || stream->file->rc == 0) {
-        return 1;
-    }
-    return 0;
-}
-
-void mustbevaildfile(FILE *stream) {
-    if (isvalidfile(stream) != 0) {
-        ckb_exit(1);
-    }
-}
-
-size_t fread(void *ptr, size_t size, size_t nitems, FILE *stream) {
-    if (s_local_access_enabled) {
-        return ckb_syscall(9005, ptr, size, nitems, stream, 0, 0);
-    }
-    if (!fs_access_enabled()) {
-        NOT_IMPL(fread);
-    }
-    mustbevaildfile(stream);
-    // TODO: How do we handle error here?
-    if (stream->offset == stream->file->size) {
-        return 0;
-    }
-    // TODO: handle the case size * nitems is greater than uint32_t max
-    // handle size * ntimes overflowing
-    uint32_t bytes_to_read = (uint32_t)size * (uint32_t)nitems;
-    if (bytes_to_read > stream->file->size - stream->offset) {
-        bytes_to_read = stream->file->size - stream->offset;
-    }
-    memcpy(ptr, stream->file->content + stream->offset, bytes_to_read);
-    stream->offset = stream->offset + bytes_to_read;
-    // The return value should be the number of items written to the ptr
-    uint32_t s = size;
-    return (bytes_to_read + s - 1) / s;
-}
-
 size_t fwrite(const void *__ptr, size_t __size, size_t __n, FILE *__s) {
     NOT_IMPL(fwrite);
-    return 0;
-}
-
-int fseek(FILE *stream, long int offset, int whence) {
-    if (s_local_access_enabled) {
-        return ckb_syscall(9011, stream, offset, whence, 0, 0, 0);
-    }
-    NOT_IMPL(fseek);
-    return 0;
-}
-
-long int ftell(FILE *stream) {
-    if (s_local_access_enabled) {
-        return ckb_syscall(9010, stream, 0, 0, 0, 0, 0);
-    }
-    NOT_IMPL(ftell);
     return 0;
 }
 
 void rewind(FILE *__stream) { NOT_IMPL(rewind); }
 
 void clearerr(FILE *__stream) { NOT_IMPL(clearerr); }
-
-int feof(FILE *stream) {
-    if (s_local_access_enabled) {
-        return ckb_syscall(9006, stream, 0, 0, 0, 0, 0);
-    }
-    if (!fs_access_enabled()) {
-        NOT_IMPL(feof);
-    }
-    if (stream->offset == stream->file->size) {
-        return 1;
-    }
-    return 0;
-}
-
-int ferror(FILE *stream) {
-    if (s_local_access_enabled) {
-        return ckb_syscall(9007, stream, 0, 0, 0, 0, 0);
-    }
-    if (!fs_access_enabled()) {
-        NOT_IMPL(ferror);
-    }
-    if (stream == 0 || stream->file->rc == 0) {
-        return 1;
-    }
-    return 0;
-}
 
 void perror(const char *__s) { NOT_IMPL(perror); }
 
@@ -347,3 +371,5 @@ int pclose(FILE *__stream) {
     NOT_IMPL(pclose);
     return 0;
 }
+
+#endif  // __GNUC__  !__clang__

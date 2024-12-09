@@ -7,15 +7,20 @@
 #define lstrlib_c
 #define LUA_LIB
 
-#include "my_ctype.h"
-#include "my_float.h"
 #include <limits.h>
-#include "my_locale.h"
-#include "my_math.h"
 #include <stddef.h>
 #include <stdlib.h>
+
+#if defined(__GNUC__) && !defined(__clang__)
+#include "my_ctype.h"
+#include "my_float.h"
+#include "my_locale.h"
+#include "my_math.h"
 #include "my_string.h"
 #include "my_stdio.h"
+#elif defined(__clang__)
+#include <string.h>
+#endif
 
 #include "lauxlib.h"
 #include "lprefix.h"
@@ -558,7 +563,7 @@ init:                     /* using goto's to optimize tail recursion */
                         if (s != NULL) {
                             p += 4;
                             goto init; /* return match(ms, s, p + 4); */
-                        }              /* else fail (s == NULL) */
+                        } /* else fail (s == NULL) */
                         break;
                     }
                     case 'f': { /* frontier? */
@@ -601,7 +606,7 @@ init:                     /* using goto's to optimize tail recursion */
                 break;
             }
             default:
-            dflt : { /* pattern class plus optional suffix */
+            dflt: { /* pattern class plus optional suffix */
                 const char *ep =
                     classend(ms, p); /* points to optional suffix */
                 /* does not match at least once? */
@@ -1247,7 +1252,7 @@ static int str_format(lua_State *L) {
                 case 'x':
                 case 'X':
                     flags = L_FMTFLAGSX;
-                intcase : {
+                intcase: {
                     lua_Integer n = luaL_checkinteger(L, arg);
                     checkformat(L, form, flags, 1);
                     addlenmod(form, LUA_INTEGER_FRMLEN);

@@ -9,8 +9,12 @@
 
 #include "lgc.h"
 
+#if defined(__GNUC__) && !defined(__clang__)
 #include "my_string.h"
 #include "my_stdio.h"
+#elif defined(__clang__)
+#include <string.h>
+#endif
 
 #include "ldebug.h"
 #include "ldo.h"
@@ -679,7 +683,7 @@ static void convergeephemerons(global_State *g) {
                 changed = 1; /* will have to revisit all ephemeron tables */
             }
         }
-        dir = !dir;    /* invert direction next time */
+        dir = !dir; /* invert direction next time */
     } while (changed); /* repeat until no more changes */
 }
 

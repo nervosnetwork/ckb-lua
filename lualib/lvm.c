@@ -9,12 +9,17 @@
 
 #include "lvm.h"
 
-#include "my_float.h"
 #include <limits.h>
-#include "my_math.h"
 #include <stdlib.h>
+
+#if defined(__GNUC__) && !defined(__clang__)
+#include "my_float.h"
+#include "my_math.h"
 #include "my_string.h"
 #include "my_stdio.h"
+#elif defined(__clang__)
+#include <string.h>
+#endif
 
 #include "ldebug.h"
 #include "ldo.h"

@@ -7,10 +7,14 @@
 #define lbaselib_c
 #define LUA_LIB
 
-#include "my_ctype.h"
-#include <stdio.h>
 #include <stdlib.h>
+
+#if defined(__GNUC__) && !defined(__clang__)
+#include "my_ctype.h"
 #include "my_string.h"
+#elif defined(__clang__)
+#include <string.h>
+#endif
 
 #include "lauxlib.h"
 #include "lprefix.h"
@@ -100,8 +104,8 @@ static int luaB_tonumber(lua_State *L) {
         if (b_str2int(s, (int)base, &n) == s + l) {
             lua_pushinteger(L, n);
             return 1;
-        }             /* else not a number */
-    }                 /* else not a number */
+        } /* else not a number */
+    } /* else not a number */
     luaL_pushfail(L); /* not a number */
     return 1;
 }

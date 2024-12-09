@@ -23,7 +23,12 @@
 */
 
 #include <limits.h>
+
+#if defined(__GNUC__) && !defined(__clang__)
 #include "my_math.h"
+#elif defined(__clang__)
+#include <string.h>
+#endif
 
 #include "ldebug.h"
 #include "ldo.h"
@@ -742,7 +747,7 @@ const TValue *luaH_get(Table *t, const TValue *key) {
                                   F2Ieq)) /* integral index? */
                 return luaH_getint(t, k); /* use specialized version */
                                           /* else... */
-        }                                 /* FALLTHROUGH */
+        } /* FALLTHROUGH */
         default:
             return getgeneric(t, key, 0);
     }

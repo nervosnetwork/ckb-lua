@@ -9,7 +9,10 @@
 
 #include <limits.h>
 #include <stdlib.h>
+
+#if defined(__GNUC__) && !defined(__clang__)
 #include "my_string.h"
+#endif
 
 #include "lauxlib.h"
 #include "lprefix.h"
@@ -29,7 +32,7 @@ typedef unsigned int utfint;
 typedef unsigned long utfint;
 #endif
 
-#define iscont(p) ((*(p)&0xC0) == 0x80)
+#define iscont(p) ((*(p) & 0xC0) == 0x80)
 
 /* from strlib */
 /* translate a relative string position: negative means back from end */

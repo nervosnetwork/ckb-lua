@@ -11,7 +11,6 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <string.h>
-#include "my_stdio.h"
 
 #include "lauxlib.h"
 #include "lprefix.h"

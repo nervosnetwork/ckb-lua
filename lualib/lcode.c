@@ -9,11 +9,14 @@
 
 #include "lcode.h"
 
+#include <limits.h>
+#include <stdlib.h>
+
+#if defined(__GNUC__) && !defined(__clang__)
+#include "my_math.h"
 #include "my_float.h"
 #include "my_stdint.h"
-#include <limits.h>
-#include "my_math.h"
-#include <stdlib.h>
+#endif
 
 #include "ldebug.h"
 #include "ldo.h"
@@ -1635,7 +1638,7 @@ void luaK_posfix(FuncState *fs, BinOpr opr, expdesc *e1, expdesc *e2,
             if (finishbinexpneg(fs, e1, e2, OP_ADDI, line, TM_SUB))
                 break; /* coded as (r1 + -I) */
                        /* ELSE */
-        }              /* FALLTHROUGH */
+        } /* FALLTHROUGH */
         case OPR_DIV:
         case OPR_IDIV:
         case OPR_MOD:

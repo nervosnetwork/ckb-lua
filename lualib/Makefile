@@ -6,7 +6,7 @@
 # Your platform. See PLATS for possible values.
 PLAT= guess
 
-CC=riscv64-unknown-linux-gnu-gcc
+CC ?= clang-16
 # -ULUA_USE_LINUX -ULUA_USE_POSIX to make lua dependencies minimal,
 # otherwise, we may unable to find various platform dependent symbols, e.g.
 # setsignal.
@@ -14,8 +14,15 @@ CC=riscv64-unknown-linux-gnu-gcc
 # And if __ISO_C_VISIBLE=1999 then LLONG_MAX is defined in ckb-c-stdlib
 # See https://github.com/nervosnetwork/ckb-c-stdlib/blob/efe1fe6b3cdda12e248e25664f5c04cbf7876265/libc/limits.h#L94
 # and https://github.com/nervosnetwork/ckb-lua/blob/b71d44288e8fb085074d3af056b359b8c6c22afa/lualib/luaconf.h#L502
-CFLAGS= -Ic-stdlib -O3 -Wall -Wextra -D__ISO_C_VISIBLE=1999 -DLUA_COMPAT_5_3 -ULUA_USE_LINUX -ULUA_USE_POSIX $(SYSCFLAGS) $(MYCFLAGS)
-LDFLAGS= $(SYSLDFLAGS) $(MYLDFLAGS)
+CFLAGS :=	--target=riscv64 -march=rv64imc_zba_zbb_zbc_zbs \
+			-g -O3 -nostdinc -fdata-sections -ffunction-sections
+
+CFLAGS += -D__ISO_C_VISIBLE=1999 -DCKB_DECLARATION_ONLY -DCKB_MALLOC_DECLARATION_ONLY -DLUA_COMPAT_5_3
+CFLAGS += -isystem ../deps/musl/release/include/ -I../deps/ckb -Ic-stdlib
+
+LDFLAGS= $(SYSLDFLAGS) $(MYLDFLAGS) \
+	--gc-sections --nostdlib --sysroot deps/musl/release \
+	-L../deps/musl/release/lib -L../deps/compiler-rt-builtins-riscv/build -lc -lgcc -lcompiler-rt
 LIBS= -lm $(SYSLIBS) $(MYLIBS)
 
 AR= ar rc

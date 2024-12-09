@@ -7,9 +7,13 @@
 #define ldblib_c
 #define LUA_LIB
 
-#include <stdio.h>
 #include <stdlib.h>
+
+#if defined(__GNUC__) && !defined(__clang__)
 #include "my_string.h"
+#elif defined(__clang__)
+#include <string.h>
+#endif
 
 #include "lauxlib.h"
 #include "lprefix.h"

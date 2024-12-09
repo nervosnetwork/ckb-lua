@@ -9,9 +9,20 @@
 
 #include <limits.h>
 #include <stddef.h>
+
+#if defined(__GNUC__) && !defined(__clang__)
+#include "my_float.h"
 #include "my_stddef.h"
 #include "my_stdlib.h"
-#include "my_float.h"
+#elif defined(__clang__)
+#include <float.h>
+#include <math.h>
+#include <setjmp.h>
+#include <locale.h>
+#include <ctype.h>
+#else
+#error "This code is only supported by GCC or Clang."
+#endif
 
 /*
 ** ===================================================================
@@ -551,7 +562,11 @@
 ** (All uses in Lua have only one format item.)
 */
 #if !defined(LUA_USE_C89)
+#if defined(__GNUC__) && !defined(__clang__)
 #define l_sprintf(s, sz, f, i) snprintf_(s, sz, f, i)
+#else
+#define l_sprintf(s, sz, f, i) snprintf(s, sz, f, i)
+#endif
 #else
 #define l_sprintf(s, sz, f, i) ((void)(sz), sprintf(s, f, i))
 #endif

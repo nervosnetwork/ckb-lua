@@ -7,11 +7,18 @@
 #define lauxlib_c
 #define LUA_LIB
 
+#if defined(__GNUC__) && !defined(__clang__)
 #include "my_errno.h"
-#include <stdarg.h>
-#include <stdlib.h>
 #include "my_string.h"
 #include "my_stdio.h"
+#elif defined(__clang__)
+#include <errno.h>
+#include <stdio.h>
+#include <string.h>
+#endif
+
+#include <stdarg.h>
+#include <stdlib.h>
 
 #include "lprefix.h"
 

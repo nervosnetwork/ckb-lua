@@ -321,12 +321,12 @@ LUA_API void(lua_closeslot)(lua_State *L, int idx);
 ** ===============================================================
 */
 
-#define lua_getextraspace(L) ((void *)((char *)(L)-LUA_EXTRASPACE))
+#define lua_getextraspace(L) ((void *)((char *)(L) - LUA_EXTRASPACE))
 
 #define lua_tonumber(L, i) lua_tonumberx(L, (i), NULL)
 #define lua_tointeger(L, i) lua_tointegerx(L, (i), NULL)
 
-#define lua_pop(L, n) lua_settop(L, -(n)-1)
+#define lua_pop(L, n) lua_settop(L, -(n) - 1)
 
 #define lua_newtable(L) lua_createtable(L, 0, 0)
 

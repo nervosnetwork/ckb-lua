@@ -4,3 +4,9 @@
 [submodule "deps/compiler-rt-builtins-riscv"]
 	path = deps/compiler-rt-builtins-riscv
 	url = https://github.com/nervosnetwork/compiler-rt-builtins-riscv.git
+[submodule "deps/ckb-libcxx-builder"]
+	path = deps/ckb-libcxx-builder
+	url = https://github.com/xxuejie/ckb-libcxx-builder.git
+[submodule "deps/musl"]
+	path = deps/musl
+	url = https://github.com/xxuejie/musl.git

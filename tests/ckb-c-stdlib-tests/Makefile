@@ -2,7 +2,10 @@ TARGET := riscv64-unknown-linux-gnu
 CC := $(TARGET)-gcc
 LD := $(TARGET)-gcc
 OBJCOPY := $(TARGET)-objcopy
-CFLAGS := -fPIC -O3 -fno-builtin -nostdinc -nostdlib -nostartfiles -fvisibility=hidden -fdata-sections -ffunction-sections -I ../../lualib/c-stdlib  -I ../../lualib/c-stdlib/src  -I ../../include/ckb-c-stdlib -I ../../include/ckb-c-stdlib/libc -Wall -Werror -Wno-nonnull -Wno-nonnull-compare -Wno-unused-function -g
+CFLAGS := \
+	-fPIC -O3 -fno-builtin -nostdinc -nostdlib -nostartfiles -fvisibility=hidden -fdata-sections -ffunction-sections \
+	-I ../../lualib/c-stdlib  -I ../../lualib/c-stdlib/src -I ../../lualib/c-stdlib/my_gnu -I ../../lualib/c-stdlib/my_gnu/src  -I ../../include/ckb-c-stdlib -I ../../include/ckb-c-stdlib/libc \
+	-Wall -Werror -Wno-nonnull -Wno-nonnull-compare -Wno-unused-function -g
 LDFLAGS := -nostartfiles -Wl,-static -Wl,--gc-sections
 
 # docker pull nervos/ckb-riscv-gnu-toolchain:gnu-bionic-20191012

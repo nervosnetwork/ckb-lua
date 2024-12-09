@@ -29,7 +29,7 @@ jobs:
         curl -sf -L https://apt.llvm.org/llvm.sh | sudo bash -s -- ${{ matrix.llvm_version }}
     - name: Build
       run: |
-        make -f Makefile.clang V=1 LLVM_VERSION=${{ matrix.llvm_version }}
+        make V=1 LLVM_VERSION=${{ matrix.llvm_version }}
     - name: Run cases
       run: |
         cd tests/official && make ci

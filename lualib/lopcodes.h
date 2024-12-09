@@ -61,7 +61,7 @@ enum OpMode { iABC, iABx, iAsBx, iAx, isJ }; /* basic instruction formats */
 */
 
 /* Check whether type 'int' has at least 'b' bits ('b' < 32) */
-#define L_INTHASBITS(b) ((UINT_MAX >> ((b)-1)) >= 1)
+#define L_INTHASBITS(b) ((UINT_MAX >> ((b) - 1)) >= 1)
 
 #if L_INTHASBITS(SIZE_Bx)
 #define MAXARG_Bx ((1 << SIZE_Bx) - 1)
@@ -91,7 +91,7 @@ enum OpMode { iABC, iABx, iAsBx, iAx, isJ }; /* basic instruction formats */
 #define OFFSET_sC (MAXARG_C >> 1)
 
 #define int2sC(i) ((i) + OFFSET_sC)
-#define sC2int(i) ((i)-OFFSET_sC)
+#define sC2int(i) ((i) - OFFSET_sC)
 
 /* creates a mask with 'n' 1 bits at position 'p' */
 #define MASK1(n, p) ((~((~(Instruction)0) << (n))) << (p))
@@ -104,15 +104,15 @@ enum OpMode { iABC, iABx, iAsBx, iAx, isJ }; /* basic instruction formats */
 */
 
 #define GET_OPCODE(i) (cast(OpCode, ((i) >> POS_OP) & MASK1(SIZE_OP, 0)))
-#define SET_OPCODE(i, o)                   \
-    ((i) = (((i)&MASK0(SIZE_OP, POS_OP)) | \
+#define SET_OPCODE(i, o)                     \
+    ((i) = (((i) & MASK0(SIZE_OP, POS_OP)) | \
             ((cast(Instruction, o) << POS_OP) & MASK1(SIZE_OP, POS_OP))))
 
 #define checkopm(i, m) (getOpMode(GET_OPCODE(i)) == m)
 
 #define getarg(i, pos, size) (cast_int(((i) >> (pos)) & MASK1(size, 0)))
-#define setarg(i, v, pos, size)      \
-    ((i) = (((i)&MASK0(size, pos)) | \
+#define setarg(i, v, pos, size)        \
+    ((i) = (((i) & MASK0(size, pos)) | \
             ((cast(Instruction, v) << pos) & MASK1(size, pos))))
 
 #define GETARG_A(i) getarg(i, POS_A, SIZE_A)
