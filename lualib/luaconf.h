@@ -14,12 +14,6 @@
 #include "my_float.h"
 #include "my_stddef.h"
 #include "my_stdlib.h"
-// #include "my_string.h"
-// #include "my_stdio.h"
-// #include "my_math.h"
-// #include "my_setjmp.h"
-// #include "my_locale.h"
-// #include "my_ctype.h"
 #elif defined(__clang__)
 #include <float.h>
 #include <math.h>
